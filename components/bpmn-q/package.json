@@ -25,7 +25,8 @@
   },
   "prepublishOnly": "webpack --mode=production",
   "publishConfig": {
-    "@PlanQK:registry": "https://npm.pkg.github.com"
+    "@PlanQK:registry": "https://npm.pkg.github.com",
+    "@anaqor:registry": "https://npm.pkg.github.com"
   },
   "dependencies": {
     "@bpmn-io/properties-panel": "^1.3.1",
