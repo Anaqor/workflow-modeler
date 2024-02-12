@@ -1,6 +1,8 @@
 /**
  * Event handler used to trigger custom HTML events if the workflow of the modeler changes.
  */
+import {getModeler} from "../ModelerHandler";
+import {loadDiagram} from "../util/IoUtilities";
 
 // ref to the current quantum workflow modeler
 let modelerComponent;
@@ -12,6 +14,24 @@ let modelerComponent;
  */
 export function initEditorEventHandler(newModelerComponent) {
   modelerComponent = newModelerComponent;
+
+  modelerComponent.addEventListener(
+      "quantum-workflow-load",
+      (event) => {
+        console.log("Should load quantum workflow: " + event.detail.workflowName);
+        loadDiagram(event.detail.workflow, getModeler(),true)
+      },
+      false
+  );
+
+  modelerComponent.addEventListener(
+      "quantum-workflow-transform",
+      (event) => {
+        console.log("Should transform quantum workflow to camunda: " + event.detail.workflowName);
+        // loadDiagram(event.detail.workflow, getModeler(),true)
+      },
+      false
+  );
 }
 
 /**

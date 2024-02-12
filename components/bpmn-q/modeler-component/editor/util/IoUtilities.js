@@ -92,6 +92,38 @@ export async function saveModelerAsLocalFile(
 }
 
 /**
+ * Raise an event with the changed bpmn diagram which is currently opened in the given bpmn modeler.
+ * Whoever catches the event may store the bpmn diagram or do whatever he wants to do...
+ *
+ * @param modeler The bpmn modeler the bpmn diagram is opened in.
+ * @returns {Promise<void>}
+ */
+export async function saveModelerInEvent(modeler) {
+  const xml = await getXml(modeler);
+
+  dispatchWorkflowEvent(
+      "workflow-changed",
+      xml,
+      editorConfig.getFileName()
+  );
+}
+
+/**
+ * Raise an event with the transformed bpmn diagram.
+ * Whoever catches the event may store the bpmn diagram or do whatever he wants to do...
+ *
+ * @param xml The transformed xml model of the bpmn modeler the bpmn diagram is opened in.
+ * @returns {Promise<void>}
+ */
+export async function saveModelerInEvent(xml) {
+  dispatchWorkflowEvent(
+      "workflow-transformed",
+      xml,
+      editorConfig.getFileName()
+  );
+}
+
+/**
  * Simple Getter which returns the opened bpmn diagram of the given bpmn modeler as a xml diagram.
  *
  * @param modeler The bpmn modeler the bpmn diagram is opened in.
