@@ -1,6 +1,6 @@
 {
-  "name": "@anaqork/quantum-workflow-modeler",
-  "version": "1.3.2",
+  "name": "@anaqor/quantum-workflow-modeler",
+  "version": "1.3.3",
   "description": "",
   "package name": "@anaqor/workflow-modeler",
   "main": "index.js",
@@ -19,7 +19,7 @@
   },
   "author": "",
   "license": "Apache-2.0",
-  "repository": "https://github.com/PlanQK/workflow-modeler.git",
+  "repository": "https://github.com/Anaqor/workflow-modeler.git",
   "prepublishOnly": "webpack --mode=production",
   "publishConfig": {
     "@PlanQK:registry": "https://npm.pkg.github.com",
