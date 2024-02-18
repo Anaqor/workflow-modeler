@@ -91,6 +91,24 @@ export async function saveModelerAsLocalFile(
   }
 }
 
+export async function dispatchWorkflowChangedEvent(modeler) {
+  const xml = await getXml(modeler);
+
+  dispatchWorkflowEvent(
+      "workflow-changed",
+      xml,
+      editorConfig.getFileName()
+  );
+}
+
+export async function dispatchWorkflowTransformedEvent(xmlTransformed) {
+  dispatchWorkflowEvent(
+      "workflow-transformed",
+      xmlTransformed,
+      editorConfig.getFileName()
+  );
+}
+
 /**
  * Simple Getter which returns the opened bpmn diagram of the given bpmn modeler as a xml diagram.
  *
