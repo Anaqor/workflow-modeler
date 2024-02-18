@@ -5,6 +5,7 @@
   "package name": "@anaqor/workflow-modeler",
   "main": "index.js",
   "files": [
+    "public/*",
     "public/**/*",
     "!public/index.html"
   ],
