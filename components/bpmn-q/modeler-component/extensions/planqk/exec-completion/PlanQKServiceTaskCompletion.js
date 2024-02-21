@@ -56,9 +56,11 @@ export async function startPlanqkReplacementProcess(xml) {
       " Planqk service tasks to replace..."
   );
   let isTransformed = !planqkServiceTasks || !planqkServiceTasks.length;
+  let serviceTaskCounter = 0;
 
   // replace each PlanQK Service Task with the subprocess that implements service interaction to retrieve standard-compliant BPMN
   for (let planqkServiceTask of planqkServiceTasks) {
+    serviceTaskCounter = serviceTaskCounter+1;
     let replacementSuccess = false;
     console.log(
       "Replacing task with id %s with PlanQK service interaction subprocess ",
@@ -70,6 +72,7 @@ export async function startPlanqkReplacementProcess(xml) {
     replacementSuccess = await replaceByInteractionSubprocess(
       definitions,
       planqkServiceTask.task,
+      serviceTaskCounter.toString(),
       planqkServiceTask.parent,
       replacementSubprocess,
       modeler
@@ -160,6 +163,7 @@ export async function startPlanqkReplacementProcess(xml) {
  *
  * @param definitions The definitions of the current process.
  * @param task The task to replace.
+ * @param uniqueTaskNodeId A (unique) id of the task node to ensure that BPMN-IDs can be generated unique over the whole workflow
  * @param parent The parent of the task
  * @param replacement The replacement fragment
  * @param modeler The current modeler
@@ -168,6 +172,7 @@ export async function startPlanqkReplacementProcess(xml) {
 async function replaceByInteractionSubprocess(
   definitions,
   task,
+  uniqueTaskNodeId,
   parent,
   replacement,
   modeler
@@ -183,12 +188,12 @@ async function replaceByInteractionSubprocess(
   const timerDefinitionEventId = "TimerEventDefinition_";
   replacement = replacement.replace(
     timerDefinitionEventId,
-    timerDefinitionEventId + task.id
+    timerDefinitionEventId + task.id + uniqueTaskNodeId
   );
   const errorDefinitionEventId = "ErrorEventDefinition_";
   replacement = replacement.replace(
     errorDefinitionEventId,
-    errorDefinitionEventId + task.id
+    errorDefinitionEventId + task.id + uniqueTaskNodeId
   );
 
   // get the root process of the replacement fragment
