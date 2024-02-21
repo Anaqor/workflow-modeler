@@ -1,6 +1,8 @@
 /**
  * Event handler used to trigger custom HTML events if the workflow of the modeler changes.
  */
+import {getModeler} from "../ModelerHandler";
+import {loadDiagram} from "../util/IoUtilities";
 
 // ref to the current quantum workflow modeler
 let modelerComponent;
@@ -12,6 +14,28 @@ let modelerComponent;
  */
 export function initEditorEventHandler(newModelerComponent) {
   modelerComponent = newModelerComponent;
+
+  modelerComponent.addEventListener(
+      "quantum-workflow-load",
+      (event) => {
+        console.log("Should load quantum workflow: " + event.detail.workflowName);
+        loadDiagram(event.detail.workflow, getModeler(),true);
+      },
+      false
+  );
+
+  // das funktioniert so noch nicht, da der workflow im editor nicht geladen ist.
+  // daher als Workaround erst einmal der deploy-button der manuell im editor gedrückt werden muss
+  modelerComponent.addEventListener(
+      "quantum-workflow-transform",
+      (event) => {
+        console.log("Should transform quantum workflow to camunda: " + event.detail.workflowName);
+        console.log("This does not work yet, please use the deploy button in editor.")
+        // const xmlTransformed = transformDiagram(event.detail.workflow, getModeler(),true);
+        // dispatchWorkflowTransformedEvent(xmlTransformed);
+      },
+      false
+  );
 }
 
 /**
