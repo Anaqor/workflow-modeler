@@ -8,8 +8,8 @@
     <semantic:subProcess id="Activity_1b6kukx" name="PlanQK Service Interaction" camunda:asyncAfter="true">
       <semantic:extensionElements>
         <camunda:inputOutput>
-          <camunda:inputParameter name="data" />
-          <camunda:inputParameter name="params" />
+          <camunda:inputParameter name="data">${planqkdata}</camunda:inputParameter>
+          <camunda:inputParameter name="params">${planqkparams}</camunda:inputParameter>
           <camunda:inputParameter name="executionState" />
           <camunda:inputParameter name="executionId" />
           <camunda:inputParameter name="serviceEndpoint" />
@@ -17,6 +17,7 @@
           <camunda:inputParameter name="consumerSecret" />
           <camunda:inputParameter name="consumerKey" />
           <camunda:inputParameter name="maxIterations">unbounded</camunda:inputParameter>
+          <camunda:outputParameter name="planqkresult">${result}</camunda:outputParameter>
         </camunda:inputOutput>
       </semantic:extensionElements>
       <semantic:startEvent id="Event_1du4ral" name="Start Interaction">
@@ -216,6 +217,7 @@ try {
    println("Result of service execution " + executionId + " retrieved successfully");
    def result = json.get("result");
    execution.setVariable("result", result);
+   println(result);
 } catch(org.camunda.bpm.engine.delegate.BpmnError e) {
    println e.errorCode;
    throw new org.camunda.bpm.engine.delegate.BpmnError(e.errorCode);
