@@ -30,6 +30,8 @@ export default function ButtonToolbar(props) {
           <PlanqkSaveButton modeler={modeler}/>
           <hr className="qwm-toolbar-splitter"/>
           <PlanqkDeploymentButton modeler={modeler}/>
+          <hr className="qwm-toolbar-splitter"/>
+          <OpenButton/>
         </div>
       )}
       {!planqkIntegration && (
