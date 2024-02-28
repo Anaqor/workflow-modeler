@@ -10,7 +10,7 @@ const defaultConfig = {
   camundaEndpoint: process.env.CAMUNDA_ENDPOINT,
   fileName: process.env.DOWNLOAD_FILE_NAME,
   transformedWorkflowHandler: transformedWorkflowHandlers.INLINE,
-  autoSaveFileOption: autoSaveFile.INTERVAL,
+  autoSaveFileOption: autoSaveFile.DISABLED,
   fileFormat: saveFileFormats.BPMN,
   autoSaveIntervalSize: process.env.AUTOSAVE_INTERVAL,
 };

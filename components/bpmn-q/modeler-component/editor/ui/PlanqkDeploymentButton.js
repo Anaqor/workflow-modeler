@@ -48,7 +48,7 @@ export default function PlanqkDeploymentButton(props) {
       });
       return;
     }
-    console.log("Camunda BPMN resulting from transformation:", xml);
+    console.log("Camunda BPMN resulting from transformation:", replaceResult.xml);
 
     NotificationHandler.getInstance().displayNotification({
       title: "Deployment to Camunda engine started",

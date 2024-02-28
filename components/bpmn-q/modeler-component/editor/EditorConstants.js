@@ -26,6 +26,7 @@ export const workflowEventTypes = {
 export const autoSaveFile = {
   INTERVAL: "Interval",
   ON_ACTION: "On Action",
+  DISABLED: "Disabled",
 };
 
 // supported save file options

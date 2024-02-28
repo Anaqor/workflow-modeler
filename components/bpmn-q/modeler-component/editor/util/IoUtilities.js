@@ -343,7 +343,9 @@ export function openInNewTab(workflowXml, fileName) {
 export function setAutoSaveInterval(
   autoSaveFileOption = editorConfig.getAutoSaveFileOption()
 ) {
-  if (autoSaveFileOption === autoSaveFile.INTERVAL) {
+  if (autoSaveFileOption === autoSaveFile.DISABLED) {
+    return;
+  } else if (autoSaveFileOption === autoSaveFile.INTERVAL) {
     getModeler().autosaveIntervalId = setInterval(() => {
       saveFile();
     }, editorConfig.getAutoSaveIntervalSize());
