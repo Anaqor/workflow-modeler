@@ -273,6 +273,18 @@ function applyTaskInput2Subprocess(taskBO, subprocessBO, bpmnFactory) {
     taskBO.consumerKey,
     bpmnFactory
   );
+  setInputParameter(
+    subprocessBO,
+    "serviceName",
+    taskBO.serviceName,
+    bpmnFactory
+  );
+  setInputParameter(
+    subprocessBO,
+    "applicationName",
+    taskBO.applicationName,
+    bpmnFactory
+  );
 }
 
 /**

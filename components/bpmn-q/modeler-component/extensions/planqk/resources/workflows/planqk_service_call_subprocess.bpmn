@@ -14,6 +14,8 @@
           <camunda:inputParameter name="tokenEndpoint"></camunda:inputParameter>
           <camunda:inputParameter name="consumerSecret"></camunda:inputParameter>
           <camunda:inputParameter name="consumerKey"></camunda:inputParameter>
+          <camunda:inputParameter name="serviceName"></camunda:inputParameter>
+          <camunda:inputParameter name="applicationName"></camunda:inputParameter>
         </camunda:inputOutput>
       </semantic:extensionElements>
       <semantic:startEvent id="Event_1du4ral" name="Start Interaction">
