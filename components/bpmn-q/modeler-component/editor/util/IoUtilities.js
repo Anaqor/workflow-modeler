@@ -91,6 +91,24 @@ export async function saveModelerAsLocalFile(
   }
 }
 
+export async function dispatchWorkflowChangedEvent(modeler) {
+  const xml = await getXml(modeler);
+
+  dispatchWorkflowEvent(
+      "workflow-changed",
+      xml,
+      editorConfig.getFileName()
+  );
+}
+
+export async function dispatchWorkflowTransformedEvent(xmlTransformed) {
+  dispatchWorkflowEvent(
+      "workflow-transformed",
+      xmlTransformed,
+      editorConfig.getFileName()
+  );
+}
+
 /**
  * Raise an event with the changed bpmn diagram which is currently opened in the given bpmn modeler.
  * Whoever catches the event may store the bpmn diagram or do whatever he wants to do...
