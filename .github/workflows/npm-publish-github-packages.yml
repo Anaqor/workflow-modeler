@@ -13,7 +13,7 @@ jobs:
 
     services:
       workflow-test-engine:
-        image: planqk/workflow-engine-test:latest
+        image: anaqor/workflow-engine-test:latest
         ports:
           - 8090:8090
 
@@ -41,7 +41,7 @@ jobs:
         with:
           node-version: 18
           registry-url: https://npm.pkg.github.com/
-          scope: '@planqk'
+          scope: '@anaqor'
       - name: run build and publish
         run: |
           npm ci

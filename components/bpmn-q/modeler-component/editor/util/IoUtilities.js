@@ -98,6 +98,24 @@ export async function saveModelerAsLocalFile(
   }
 }
 
+export async function dispatchWorkflowChangedEvent(modeler) {
+  const xml = await getXml(modeler);
+
+  dispatchWorkflowEvent(
+      "workflow-changed",
+      xml,
+      editorConfig.getFileName()
+  );
+}
+
+export async function dispatchWorkflowTransformedEvent(xmlTransformed) {
+  dispatchWorkflowEvent(
+      "workflow-transformed",
+      xmlTransformed,
+      editorConfig.getFileName()
+  );
+}
+
 /**
  * Saves the workflow as BPMN, SVG, PNG, and the views in a zip.
  * @param modeler modeler to extract the xml

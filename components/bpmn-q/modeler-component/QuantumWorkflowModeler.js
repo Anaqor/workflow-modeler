@@ -41,6 +41,8 @@ import ace from "ace-builds";
  */
 export class QuantumWorkflowModeler extends HTMLElement {
   workflowModel;
+  planqkIntegrationFlag = false;
+
   constructor() {
     super();
   }
@@ -312,6 +314,7 @@ export class QuantumWorkflowModeler extends HTMLElement {
         modeler={modeler}
         pluginButtons={getPluginButtons()}
         transformButtons={transformationButtons}
+        planqkIntegration={this.planqkIntegrationFlag}
       />
     );
 
