@@ -32,8 +32,13 @@ export default function ServiceTaskPropertiesProvider(
      */
     return function (groups) {
       if (is(element, "planqk:ServiceTask")) {
-        groups.unshift(createInputOutputGroup(element, translate));
-        groups.unshift(createSubscriptionGroup(element, translate));
+        const removeLabels = ["Asynchronous continuations","Execution listeners","Extension properties"];
+        const reducedGroups = groups.filter(function(item) {
+          return removeLabels.indexOf(item.label) == -1;
+        });
+        reducedGroups.unshift(createInputOutputGroup(element, translate));
+        reducedGroups.unshift(createSubscriptionGroup(element, translate));
+        return reducedGroups;
       }
 
       return groups;
