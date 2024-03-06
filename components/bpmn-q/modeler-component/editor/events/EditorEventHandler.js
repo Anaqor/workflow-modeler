@@ -30,7 +30,7 @@ export function initEditorEventHandler(newModelerComponent) {
       "quantum-workflow-transform",
       (event) => {
         console.log("Should transform quantum workflow to camunda: " + event.detail.workflowName);
-        console.log("This does not work yet, please use the deploy button in editor.")
+        console.log("This does not work yet, please use the deploy button in editor.");
         // const xmlTransformed = transformDiagram(event.detail.workflow, getModeler(),true);
         // dispatchWorkflowTransformedEvent(xmlTransformed);
       },
