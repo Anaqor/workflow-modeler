@@ -34,7 +34,16 @@ jobs:
           scope: '@anaqor'
       - run: npm ci
       - run: npm run build
-      - run: npm publish
+      - run: |
+          cat << EOF > .npmrc
+          //npm.pkg.github.com/:_authToken=${{ secrets.NPM_PUBLISH }}
+          EOF
+          echo ".npmrc"
+          cat .npmrc
+          echo "GITHUB_TOKEN = ${{ secrets.GITHUB_TOKEN }}"
+          echo "NPM_TOKEN = ${{ secrets.NPM_TOKEN }}"
+          echo "NODE_AUTH_TOKEN = ${{ secrets.NODE_AUTH_TOKEN }}"
+          npm publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
