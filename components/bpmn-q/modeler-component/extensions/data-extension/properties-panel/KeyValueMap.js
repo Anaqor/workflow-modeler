@@ -38,7 +38,7 @@ export default function KeyValueMap({ element, injector, attributeName }) {
       remove: removeFactory({
         commandStack,
         element,
-        parameter: keyValueEntry,
+        keyValueEntry,
         attributeName,
       }),
     };
