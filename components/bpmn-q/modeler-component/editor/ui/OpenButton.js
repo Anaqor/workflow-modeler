@@ -13,7 +13,9 @@ import JSZip from "jszip";
  * @returns {JSX.Element}
  * @constructor
  */
-export default function OpenButton() {
+export default function OpenButton(props) {
+  const { planqkIntegration } = props;
+
   const inputRef = useRef(null);
 
   function handleClick() {
@@ -116,7 +118,7 @@ export default function OpenButton() {
       <input
         ref={inputRef}
         className="qwm-toolbar-btn"
-        title="Open new workflow diagram"
+        title={planqkIntegration ? "Import workflow from file" : "Open new workflow diagram"}
         style={{ display: "none" }}
         type="file"
         accept=".bpmn, .zip"
@@ -124,7 +126,7 @@ export default function OpenButton() {
       />
       <button className="qwm-toolbar-btn" onClick={() => handleClick()}>
         <span className="qwm-icon-open-file">
-          <span className="qwm-indent">Open</span>
+          <span className="qwm-indent">{planqkIntegration ? "Import" : "Open"}</span>
         </span>
       </button>
     </>

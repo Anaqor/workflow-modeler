@@ -1,6 +1,6 @@
 import React from "react";
 import NotificationHandler from "./notifications/NotificationHandler";
-import {dispatchWorkflowTransformedEvent} from "../util/IoUtilities";
+import {dispatchWorkflowChangedEvent, dispatchWorkflowTransformedEvent} from "../util/IoUtilities";
 import { startPlanqkReplacementProcess } from "../../extensions/planqk/exec-completion/PlanQKServiceTaskCompletion";
 import { startDataFlowReplacementProcess } from "../../extensions/data-extension/transformation/TransformationManager";
 
@@ -50,13 +50,14 @@ export default function PlanqkDeploymentButton(props) {
     }
     console.log("Camunda BPMN resulting from transformation:", replaceResult.xml);
 
+    // Inform PlanQK that a new service must be created
+    await dispatchWorkflowTransformedEvent(replaceResult.xml);
+    await dispatchWorkflowChangedEvent(modeler);
+
     NotificationHandler.getInstance().displayNotification({
       title: "Deployment to Camunda engine started",
       content: "You can now publish your service and use it within an application.",
     });
-
-    // Inform PlanQK that a new service must be created
-    await  dispatchWorkflowTransformedEvent(replaceResult.xml);
   }
 
   async function onClick() {
@@ -72,7 +73,7 @@ export default function PlanqkDeploymentButton(props) {
         onClick={() => onClick()}
       >
         <span className="qwm-workflow-deployment-btn">
-          <span className="qwm-indent">Deploy Workflow</span>
+          <span className="qwm-indent">Save & Deploy</span>
         </span>
       </button>
     </div>

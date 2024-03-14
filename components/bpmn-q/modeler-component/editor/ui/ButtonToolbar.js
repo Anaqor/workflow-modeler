@@ -31,15 +31,16 @@ export default function ButtonToolbar(props) {
           <hr className="qwm-toolbar-splitter"/>
           <PlanqkDeploymentButton modeler={modeler}/>
           <hr className="qwm-toolbar-splitter"/>
-          <OpenButton/>
+          <OpenButton planqkIntegration={planqkIntegration}/>
+          <SaveButton modeler={modeler} planqkIntegration={planqkIntegration} />
         </div>
       )}
       {!planqkIntegration && (
         <div className="qwm-toolbar">
           <hr className="qwm-toolbar-splitter" />
           <NewDiagramButton modeler={modeler} />
-          <SaveButton modeler={modeler} />
-          <OpenButton />
+          <SaveButton modeler={modeler} planqkIntegration={planqkIntegration} />
+          <OpenButton planqkIntegration={planqkIntegration} />
           <UploadButton />
           <XMLViewerButton />
           <hr className="qwm-toolbar-splitter" />
