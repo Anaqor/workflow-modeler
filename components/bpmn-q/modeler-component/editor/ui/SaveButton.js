@@ -1,6 +1,8 @@
 import React from "react";
 import { saveModelerAsLocalFile } from "../util/IoUtilities";
 
+const editorConfig = require("../config/EditorConfigManager");
+
 /**
  * React button which saves the current workflow to the users local file system when clicked
  *
@@ -19,7 +21,7 @@ export default function SaveButton(props) {
             <span
                 className={"qwm-icon-saving"}
                 onClick={() => {
-                  saveModelerAsLocalFile(modeler);
+                  saveModelerAsLocalFile(modeler,editorConfig.getFileName(),editorConfig.getFileFormat(),false);
                 }}
             >
               <span className="qwm-indent">{planqkIntegration ? "Export" : "Save"}</span>
