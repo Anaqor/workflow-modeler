@@ -40,6 +40,13 @@ export default function ServiceTaskPropertiesProvider(
         reducedGroups.unshift(createSubscriptionGroup(element, translate));
         return reducedGroups;
       }
+      if (is(element, "bpmn:Process")) {
+        const removeLabels = ["History cleanup","Tasklist","Candidate starter","External task","Job execution","Execution listeners","Extension properties"];
+        const reducedGroups = groups.filter(function(item) {
+          return removeLabels.indexOf(item.label) === -1;
+        });
+        return reducedGroups;
+      }
 
       return groups;
     };
