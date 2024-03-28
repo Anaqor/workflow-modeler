@@ -14,6 +14,58 @@
           "name": "content",
           "isMany": true,
           "type": "KeyValueEntry"
+        },
+        {
+          "name": "inputFor",
+          "type": "string",
+          "enum": ["data", "params"],
+          "default": "data"
+        },
+        {
+          "name": "private",
+          "type": "boolean",
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "ProcessInputDataMapObject",
+      "superClass": ["dataflow:DataMapObject"],
+      "properties": [
+        {
+          "name": "schema",
+          "isMany": true,
+          "type": "string"
+        },
+        {
+          "name": "inputFor",
+          "type": "string",
+          "enum": ["data", "params"],
+          "default": "data"
+        }
+      ],
+      "required": ["schema"]
+    },
+    {
+      "name": "ProcessOutputDataMapObject",
+      "superClass": ["dataflow:DataMapObject"],
+      "properties": [
+        {
+          "name": "schema",
+          "isMany": true,
+          "type": "string"
+        }
+      ],
+      "required": ["schema"]
+    },
+    {
+      "name": "DataStoreReference",
+      "superClass": ["bpmn:DataStoreReference"],
+      "properties": [
+        {
+          "name": "details",
+          "isMany": true,
+          "type": "KeyValueEntry"
         }
       ]
     },
