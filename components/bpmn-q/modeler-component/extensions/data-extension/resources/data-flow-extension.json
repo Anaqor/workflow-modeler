@@ -16,15 +16,17 @@
           "type": "KeyValueEntry"
         },
         {
-          "name": "inputFor",
-          "type": "string",
-          "enum": ["data", "params"],
-          "default": "data"
+          "name": "schemaExample",
+          "type": "string"
         },
         {
-          "name": "private",
-          "type": "boolean",
-          "default": true
+          "name": "inputFor",
+          "type": "dataflow:ServiceTaskInputType"
+        },
+        {
+          "name": "visibility",
+          "type": "dataflow:DataObjectVisibility",
+          "isAttr": true
         }
       ]
     },
@@ -33,15 +35,9 @@
       "superClass": ["dataflow:DataMapObject"],
       "properties": [
         {
-          "name": "schema",
-          "isMany": true,
-          "type": "string"
-        },
-        {
           "name": "inputFor",
-          "type": "string",
-          "enum": ["data", "params"],
-          "default": "data"
+          "type": "dataflow:ServiceTaskInputType",
+          "isAttr": true
         }
       ],
       "required": ["schema"]
@@ -128,6 +124,27 @@
       ]
     }
   ],
-  "enumerations": [],
+  "enumerations": [{
+    "name": "DataObjectVisibility",
+    "literalValues": [
+      {
+        "name": "private"
+      },
+      {
+        "name": "public"
+      }
+    ]
+  },
+    {
+      "name": "ServiceTaskInputType",
+      "literalValues": [
+        {
+          "name": "data"
+        },
+        {
+          "name": "params"
+        }
+      ]
+    }],
   "associations": []
 }
