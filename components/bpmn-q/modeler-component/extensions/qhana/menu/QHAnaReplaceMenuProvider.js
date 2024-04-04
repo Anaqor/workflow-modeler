@@ -182,7 +182,7 @@ export default class QHAnaReplaceMenuProvider {
         commandStack
       );
 
-      // create a data map object and set ist content to the outputs if output attributes are defined
+      // create a data map object and set its content to the outputs if output attributes are defined
       if (outputAttributes.length > 0) {
         // create a data map object for the output data
         const dataMapObject = appendElement(

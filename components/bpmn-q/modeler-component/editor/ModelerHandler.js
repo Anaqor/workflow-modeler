@@ -1,5 +1,5 @@
 import BpmnModeler from "bpmn-js/lib/Modeler";
-import BpmnPalletteModule from "bpmn-js/lib/features/palette";
+import BpmnPalletteModule from "../extensions/planqk/palette";
 import {
   BpmnPropertiesPanelModule,
   BpmnPropertiesProviderModule,

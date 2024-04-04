@@ -27,6 +27,24 @@ export default class DataFlowPaletteProvider {
       create.start(event, shape);
     }
 
+    function createProcessInputDataMapObject(event) {
+      const businessObject = bpmnFactory.create(consts.PROCESS_INPUT_DATA_MAP_OBJECT);
+      let shape = elementFactory.createShape({
+        type: consts.PROCESS_INPUT_DATA_MAP_OBJECT,
+        businessObject: businessObject,
+      });
+      create.start(event, shape);
+    }
+
+    function createProcessOutputDataMapObject(event) {
+      const businessObject = bpmnFactory.create(consts.PROCESS_OUTPUT_DATA_MAP_OBJECT);
+      let shape = elementFactory.createShape({
+        type: consts.PROCESS_OUTPUT_DATA_MAP_OBJECT,
+        businessObject: businessObject,
+      });
+      create.start(event, shape);
+    }
+
     // start creation of a DataStoreMap
     function createDataStoreMap(event) {
       const businessObject = bpmnFactory.create(consts.DATA_STORE_MAP);
@@ -38,14 +56,14 @@ export default class DataFlowPaletteProvider {
     }
 
     // start creation of a TransformationTask
-    function createTransformationTask(event) {
-      const businessObject = bpmnFactory.create(consts.TRANSFORMATION_TASK);
-      let shape = elementFactory.createShape({
-        type: consts.TRANSFORMATION_TASK,
-        businessObject: businessObject,
-      });
-      create.start(event, shape);
-    }
+    // function createTransformationTask(event) {
+    //   const businessObject = bpmnFactory.create(consts.TRANSFORMATION_TASK);
+    //   let shape = elementFactory.createShape({
+    //     type: consts.TRANSFORMATION_TASK,
+    //     businessObject: businessObject,
+    //   });
+    //   create.start(event, shape);
+    // }
 
     return {
       // add separator line to delimit the new group
@@ -71,15 +89,33 @@ export default class DataFlowPaletteProvider {
           dragstart: createDataStoreMap,
         },
       },
-      "create.data-flow-transformation-task": {
+      "create.dataflow-process-input-data-map-object": {
         group: "dataflowExt",
-        className: "dataflow-transformation-task-palette-icon",
-        title: translate("Creates a task ot specify data transformations in"),
+        className: "dataflow-process-input-data-map-object-palette-icon",
+        title: translate("Creates a Data Map Object to model data items that map to input data of the workflow"),
         action: {
-          click: createTransformationTask,
-          dragstart: createTransformationTask,
+          click: createProcessInputDataMapObject,
+          dragstart: createProcessInputDataMapObject,
         },
       },
+      "create.dataflow-process-output-data-map-object": {
+        group: "dataflowExt",
+        className: "dataflow-process-output-data-map-object-palette-icon",
+        title: translate("Creates a Data Map Object to model data items that map to output data of the workflow"),
+        action: {
+          click: createProcessOutputDataMapObject,
+          dragstart: createProcessOutputDataMapObject,
+        },
+      },
+      // "create.data-flow-transformation-task": {
+      //   group: "dataflowExt",
+      //   className: "dataflow-transformation-task-palette-icon",
+      //   title: translate("Creates a task ot specify data transformations in"),
+      //   action: {
+      //     click: createTransformationTask,
+      //     dragstart: createTransformationTask,
+      //   },
+      // },
     };
   }
 }

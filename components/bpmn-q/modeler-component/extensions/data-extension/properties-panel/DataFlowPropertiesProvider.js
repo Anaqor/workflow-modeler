@@ -38,7 +38,7 @@ export default function DataFlowPropertiesProvider(
      */
     return function (groups) {
       // add group for displaying the content attribute of a DataMapObject as a key value map
-      if (is(element, consts.DATA_MAP_OBJECT)) {
+      if (is(element, consts.DATA_MAP_OBJECT) || is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
         groups.push(createDataMapObjectGroup(element, injector, translate));
       }
 

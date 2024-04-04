@@ -69,8 +69,8 @@ export async function startDataFlowReplacementProcess(xml) {
   for (let transformationAssociation of transformationAssociations) {
     // if source === DataMapObject: expressions als inputs im target
     if (
-      transformationAssociation.source.type === consts.DATA_MAP_OBJECT &&
-      transformationAssociation.target.type !== consts.DATA_MAP_OBJECT
+      ((transformationAssociation.source.type === consts.DATA_MAP_OBJECT) || (transformationAssociation.source.type === consts.PROCESS_INPUT_DATA_MAP_OBJECT)) &&
+      ((transformationAssociation.target.type !== consts.DATA_MAP_OBJECT) && (transformationAssociation.target.type !== consts.PROCESS_OUTPUT_DATA_MAP_OBJECT))
     ) {
       targetActivityElement = transformationAssociation.target;
 
@@ -89,8 +89,8 @@ export async function startDataFlowReplacementProcess(xml) {
 
     // if target && source === DataMapObject: add expressions to content of target data map object
     if (
-      transformationAssociation.source.type === consts.DATA_MAP_OBJECT &&
-      transformationAssociation.target.type === consts.DATA_MAP_OBJECT
+      ((transformationAssociation.source.type === consts.DATA_MAP_OBJECT) || (transformationAssociation.source.type === consts.PROCESS_INPUT_DATA_MAP_OBJECT)) &&
+      ((transformationAssociation.target.type === consts.DATA_MAP_OBJECT) || (transformationAssociation.target.type === consts.PROCESS_OUTPUT_DATA_MAP_OBJECT))
     ) {
       targetDataMapObject = transformationAssociation.target;
       sourceDataMapObject = transformationAssociation.source;
@@ -149,7 +149,7 @@ export async function startDataFlowReplacementProcess(xml) {
     target = dataAssociation.target;
 
     // if source === DataMapObject: content als input in target activity
-    if (source.type === consts.DATA_MAP_OBJECT) {
+    if ((source.type === consts.DATA_MAP_OBJECT) || (source.type === consts.PROCESS_INPUT_DATA_MAP_OBJECT)) {
       activity = target;
       dataMapObject = source;
       businessObject = dataMapObject.businessObject;
@@ -163,7 +163,7 @@ export async function startDataFlowReplacementProcess(xml) {
     }
 
     // if target === DataMapObject: content als output in source
-    if (target.type === consts.DATA_MAP_OBJECT) {
+    if ((target.type === consts.DATA_MAP_OBJECT) || (target.type === consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
       dataMapObject = target;
       activity = source;
       businessObject = dataMapObject.businessObject;
@@ -288,6 +288,18 @@ function transformDataMapObjects(
     rootProcess,
     elementRegistry,
     consts.DATA_MAP_OBJECT
+  ).concat(
+    getAllElementsInProcess(
+      rootProcess,
+      elementRegistry,
+      consts.PROCESS_INPUT_DATA_MAP_OBJECT
+    )
+  ).concat(
+    getAllElementsInProcess(
+      rootProcess,
+      elementRegistry,
+      consts.PROCESS_OUTPUT_DATA_MAP_OBJECT
+    )
   );
   console.log(
     "Found " + dataObjectMaps.length + " DataObjectMapReferences to replace."

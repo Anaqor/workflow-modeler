@@ -70,10 +70,20 @@ export default class CustomRulesProvider extends BpmnRules {
   canConnect(source, target, connection) {
     console.log("##### can connect");
 
+    // do not allow a connection if target is PROCESS_INPUT-Data-Object
+    if (is(target, consts.PROCESS_INPUT_DATA_MAP_OBJECT)) {
+      return false;
+    }
+
+    // do not allow a connection if source is PROCESS_OUTPUT-Data-Object
+    if (is(source, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
+      return false;
+    }
+
     // test connection via transformation association if source or target are DataMapObjects
     if (
-      is(source, consts.DATA_MAP_OBJECT) ||
-      is(target, consts.DATA_MAP_OBJECT)
+      (is(source, consts.DATA_MAP_OBJECT) || is(source, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(source, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) ||
+      (is(target, consts.DATA_MAP_OBJECT) || is(target, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(target, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT))
     ) {
       return this.canConnectDataExtension(source, target);
     }
@@ -100,8 +110,8 @@ export default class CustomRulesProvider extends BpmnRules {
 
     // do not allow sequence flow connections with DataMapObjects
     if (
-      is(source, consts.DATA_MAP_OBJECT) ||
-      is(target, consts.DATA_MAP_OBJECT)
+      (is(source, consts.DATA_MAP_OBJECT) || is(source, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(source, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) ||
+      (is(target, consts.DATA_MAP_OBJECT) || is(target, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(target, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT))
     ) {
       return false;
     }
@@ -123,16 +133,16 @@ export default class CustomRulesProvider extends BpmnRules {
     // block outgoing connections from loop, parallel und multi instance markers to data map objects
     if (
       source.businessObject.loopCharacteristics &&
-      is(target, consts.DATA_MAP_OBJECT)
+      (is(target, consts.DATA_MAP_OBJECT) || is(target, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(target, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT))
     ) {
       return false;
     }
 
     // block connections from or to a data map object that is connected with a start event
     if (
-      (is(source, consts.DATA_MAP_OBJECT) &&
+      ((is(source, consts.DATA_MAP_OBJECT) || is(source, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(source, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) &&
         isConnectedWith(source, "bpmn:StartEvent")) ||
-      (is(target, consts.DATA_MAP_OBJECT) &&
+      ((is(target, consts.DATA_MAP_OBJECT) || is(target, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(target, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) &&
         isConnectedWith(target, "bpmn:StartEvent"))
     ) {
       return false;
@@ -140,8 +150,8 @@ export default class CustomRulesProvider extends BpmnRules {
 
     // add rule for connections via a DataTransformationAssociation
     if (
-      isAny(source, [consts.DATA_MAP_OBJECT]) &&
-      isAny(target, [consts.DATA_MAP_OBJECT])
+      isAny(source, [consts.DATA_MAP_OBJECT,consts.PROCESS_INPUT_DATA_MAP_OBJECT,consts.PROCESS_OUTPUT_DATA_MAP_OBJECT]) &&
+      isAny(target, [consts.DATA_MAP_OBJECT,consts.PROCESS_INPUT_DATA_MAP_OBJECT,consts.PROCESS_OUTPUT_DATA_MAP_OBJECT])
     ) {
       console.log(
         "Create connection between DataMapObjects with " +
@@ -152,27 +162,27 @@ export default class CustomRulesProvider extends BpmnRules {
 
     // the normal rules for a DataObject
     if (
-      isAny(source, [consts.DATA_MAP_OBJECT]) &&
+      isAny(source, [consts.DATA_MAP_OBJECT,consts.PROCESS_INPUT_DATA_MAP_OBJECT]) &&
       isAny(target, ["bpmn:Activity", "bpmn:ThrowEvent"])
     ) {
       console.log("Map to act");
       return { type: "bpmn:DataInputAssociation" };
     }
     if (
-      isAny(target, [consts.DATA_MAP_OBJECT]) &&
+      isAny(target, [consts.DATA_MAP_OBJECT,consts.PROCESS_OUTPUT_DATA_MAP_OBJECT]) &&
       isAny(source, ["bpmn:ThrowEvent"])
     ) {
       console.log("Map to act");
       return false;
     }
     if (
-      isAny(target, [consts.DATA_MAP_OBJECT]) &&
+      isAny(target, [consts.DATA_MAP_OBJECT,consts.PROCESS_OUTPUT_DATA_MAP_OBJECT]) &&
       isAny(source, ["bpmn:Activity", "bpmn:CatchEvent"])
     ) {
       return { type: "bpmn:DataOutputAssociation" };
     }
     if (
-      isAny(source, [consts.DATA_MAP_OBJECT]) &&
+      isAny(source, [consts.DATA_MAP_OBJECT,consts.PROCESS_INPUT_DATA_MAP_OBJECT,consts.PROCESS_OUTPUT_DATA_MAP_OBJECT]) &&
       isAny(target, ["bpmn:CatchEvent"])
     ) {
       return false;
@@ -180,7 +190,7 @@ export default class CustomRulesProvider extends BpmnRules {
 
     // restrict connections via sequence flow
     if (
-      isAny(source, [consts.DATA_MAP_OBJECT]) &&
+      isAny(source, [consts.DATA_MAP_OBJECT,consts.PROCESS_INPUT_DATA_MAP_OBJECT,consts.PROCESS_OUTPUT_DATA_MAP_OBJECT]) &&
       isAny(target, [
         "bpmn:DataObjectReference",
         "bpmn:DataStoreReference",
@@ -198,7 +208,7 @@ export default class CustomRulesProvider extends BpmnRules {
         "bpmn:DataStoreReference",
         "bpmn:Gateway",
       ]) &&
-      isAny(target, [consts.DATA_MAP_OBJECT])
+      isAny(target, [consts.DATA_MAP_OBJECT,consts.PROCESS_INPUT_DATA_MAP_OBJECT,consts.PROCESS_OUTPUT_DATA_MAP_OBJECT])
     ) {
       return false;
     }

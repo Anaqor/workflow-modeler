@@ -17,11 +17,12 @@
         },
         {
           "name": "schemaExample",
-          "type": "string"
+          "type": "String"
         },
         {
           "name": "inputFor",
-          "type": "dataflow:ServiceTaskInputType"
+          "type": "dataflow:ServiceTaskInputType",
+          "isAttr": true
         },
         {
           "name": "visibility",
@@ -34,13 +35,7 @@
       "name": "ProcessInputDataMapObject",
       "superClass": ["dataflow:DataMapObject"],
       "properties": [
-        {
-          "name": "inputFor",
-          "type": "dataflow:ServiceTaskInputType",
-          "isAttr": true
-        }
-      ],
-      "required": ["schema"]
+      ]
     },
     {
       "name": "ProcessOutputDataMapObject",
@@ -49,21 +44,10 @@
         {
           "name": "schema",
           "isMany": true,
-          "type": "string"
+          "type": "String"
         }
       ],
       "required": ["schema"]
-    },
-    {
-      "name": "DataStoreReference",
-      "superClass": ["bpmn:DataStoreReference"],
-      "properties": [
-        {
-          "name": "details",
-          "isMany": true,
-          "type": "KeyValueEntry"
-        }
-      ]
     },
     {
       "name": "DataStoreMap",
