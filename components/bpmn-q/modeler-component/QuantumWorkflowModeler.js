@@ -258,6 +258,12 @@ export class QuantumWorkflowModeler extends HTMLElement {
     });
   }
 
+  hideTokenSimulationLink() {
+    // as it is not so easy to delete the token-simulation-module from the editor, the pragmatic solution is to simple hide the div
+    // and we can assume that there is only one div with class "bts-toggle-mode"
+    document.getElementsByClassName("bts-toggle-mode")[0].style["display"] = "none"
+  }
+
   /**
    * Initializes the modeler component by creating the bpmn-js modeler instance and rendering the React components of
    * the editor into the DOM.
@@ -305,6 +311,8 @@ export class QuantumWorkflowModeler extends HTMLElement {
         planqkIntegration={this.planqkIntegrationFlag}
       />
     );
+
+    this.hideTokenSimulationLink();
 
     // load initial workflow
     this.workflowModel =
