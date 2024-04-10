@@ -1,12 +1,32 @@
 import keyValueMap from "./KeyValueMap";
 import { is } from "bpmn-js/lib/util/ModelUtil";
-import { ListGroup } from "@bpmn-io/properties-panel";
+import {ListGroup, useLayoutState, useShowEntryEvent} from "@bpmn-io/properties-panel";
 import * as consts from "../Constants";
 import * as configConsts from "../../../editor/configurations/Constants";
 import ConfigurationsProperties from "../../../editor/configurations/ConfigurationsProperties";
 import { getTransformationTaskConfiguration } from "../transf-task-configs/TransformationTaskConfigurations";
+import {useEffect, useLayoutEffect, useMemo, useState} from "@bpmn-io/properties-panel/preact/hooks";
+import {jsx, jsxs} from "@bpmn-io/properties-panel/preact/jsx-runtime";
+import classnames from "classnames";
+import {debounce, isFunction} from 'min-dash';
 
 const LOW_PRIORITY = 500;
+
+let ArrowIcon = function ArrowIcon(props) {
+    return jsx("svg", {
+        ...props,
+        children: jsx("path", {
+            fillRule: "evenodd",
+            d: "m11.657 8-4.95 4.95a1 1 0 0 1-1.414-1.414L8.828 8 5.293 4.464A1 1 0 1 1 6.707 3.05L11.657 8Z"
+        })
+    });
+};
+ArrowIcon.defaultProps = {
+    xmlns: "http://www.w3.org/2000/svg",
+    width: "16",
+    height: "16"
+};
+
 
 /**
  * A properties provider for the properties panel of the bpmn-js modeler which displays the custom properties of the
@@ -37,14 +57,33 @@ export default function DataFlowPropertiesProvider(
      * @return {Object[]} modified groups
      */
     return function (groups) {
+      let modifiedGroups = groups;
+
+      // remove unwanted groups
+      if (is(element, consts.DATA_MAP_OBJECT) || is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
+        const removeLabels = ["Extension properties"];
+        modifiedGroups = groups.filter(function(item) {
+          return removeLabels.indexOf(item.label) === -1;
+        });
+      }
+
       // add group for displaying the content attribute of a DataMapObject as a key value map
       if (is(element, consts.DATA_MAP_OBJECT) || is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
-        groups.push(createDataMapObjectGroup(element, injector, translate));
+        console.log("isElement DATA_MAP / INPUT / OUTPUT");
+        modifiedGroups.push(createDataMapObjectGroupForContent(element, injector, translate));
+      }
+
+      // add further groups for Input-DataMap
+      if (is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT)) {
+        console.log("isElement INPUT");
+        modifiedGroups.push(createDataMapObjectGroupForSchemaExample(element, injector, translate));
+        modifiedGroups.push(createDataMapObjectGroupForPrivatePublicChoice(element, injector, translate));
+        modifiedGroups.push(createDataMapObjectGroupForDataParamChoice(element, injector, translate));
       }
 
       // add group for displaying the details attribute of a DataStoreMap as a key value map
       if (is(element, consts.DATA_STORE_MAP)) {
-        groups.push(createDataStoreMapGroup(element, injector, translate));
+        modifiedGroups.push(createDataStoreMapGroup(element, injector, translate));
       }
 
       // add group for displaying the properties of transformation task and its configurations
@@ -55,7 +94,7 @@ export default function DataFlowPropertiesProvider(
         );
         if (selectedConfiguration) {
           // add properties group for properties defined by the configuration
-          groups.splice(
+          modifiedGroups.splice(
             1,
             0,
             createTransformationTaskConfigurationsGroup(
@@ -68,19 +107,19 @@ export default function DataFlowPropertiesProvider(
         }
 
         // add entries for the parameters attribute of a transformation task
-        groups.push(
+        modifiedGroups.push(
           createTransformationTaskGroup(element, injector, translate)
         );
       }
 
       // add group for displaying the expressions attribute fo the transformation association
       if (is(element, consts.TRANSFORMATION_ASSOCIATION)) {
-        groups.push(
+        modifiedGroups.push(
           createTransformationAssociationGroup(element, injector, translate)
         );
       }
 
-      return groups;
+      return modifiedGroups;
     };
   };
 
@@ -102,15 +141,64 @@ DataFlowPropertiesProvider.$inject = [
  * @param translate The translate function of the bpmn-js modeler
  * @returns {{add: function(*): void, component: ((function(import('../PropertiesPanel').ListGroupDefinition): preact.VNode<any>)|*), id: string, label, items: *}}
  */
-function createDataMapObjectGroup(element, injector, translate) {
+function createDataMapObjectGroupForContent(element, injector, translate) {
+  console.log("createDataMapObjectGroupForContent");
   const attributeName = consts.CONTENT;
-  return {
+  let xxx = {
+    // return {
     id: "dataMapObjectProperties",
     label: translate("Content"),
     component: ListGroup,
     ...keyValueMap({ element, injector, attributeName }),
   };
+  console.log(xxx);
+  return xxx;
 }
+
+function createDataMapObjectGroupForSchemaExample(element, injector, translate) {
+  console.log("createDataMapObjectGroupForSchemaExample");
+  const attributeName = "schemaExample";
+  let xxx = {
+    // return {
+    id: "dataMapObjectPropertiesForSchemaExample",
+    label: translate("Schema Example"),
+    value: "otto",
+    component: PlanqkTextArea,
+  };
+  console.log(xxx);
+  return xxx;
+}
+
+function createDataMapObjectGroupForPrivatePublicChoice(element, injector, translate) {
+    console.log("createDataMapObjectGroupForPrivatePublicChoice");
+    const attributeName = "visibility";
+    let xxx = {
+        // return {
+        id: "dataMapObjectPropertiesForVisibility",
+        label: translate("Visibility"),
+        title: translate("Visibility"),
+        choices: ["private","public"],
+        component: PlanqkRadioChoice,
+    };
+    console.log(xxx);
+    return xxx;
+}
+
+function createDataMapObjectGroupForDataParamChoice(element, injector, translate) {
+    console.log("createDataMapObjectGroupForDataParamChoice");
+    const attributeName = "inputFor";
+    let xxx = {
+        // return {
+        id: "dataMapObjectPropertiesForInputFor",
+        label: translate("Input For"),
+        title: translate("Input For"),
+        choices: ["data","param"],
+        component: PlanqkRadioChoice,
+    };
+    console.log(xxx);
+    return xxx;
+}
+
 
 /**
  * Creates a properties group for displaying the custom properties of a DataFlow data store map. This group contains
@@ -184,7 +272,9 @@ function createTransformationTaskConfigurationsGroup(
   translate,
   configuration
 ) {
-  return {
+  console.log("createTransformationTaskConfigurationsGroup");
+  let xxx = {
+    // return {
     id: "serviceTaskConfigurationsGroupProperties",
     label: translate(configuration.groupLabel || "Configurations Properties"),
     entries: ConfigurationsProperties(
@@ -194,4 +284,279 @@ function createTransformationTaskConfigurationsGroup(
       configuration
     ),
   };
+  console.log(xxx);
+  return xxx;
+}
+
+
+function resizeToContents(element) {
+  element.style.height = 'auto';
+
+  // a 2px pixel offset is required to prevent scrollbar from
+  // appearing on OS with a full length scroll bar (Windows/Linux)
+  element.style.height = `${element.scrollHeight + 2}px`;
+}
+function PlanqkTextArea(props) {
+    const {
+        id,
+        label,
+        value = '',
+        disabled,
+        monospace,
+        onFocus,
+        onBlur,
+        autoResize,
+        rows = autoResize ? 1 : 2
+    } = props;
+    const [open, setOpen] = useLayoutState(['groups', id, 'open'], false);
+    const toggleOpen = () => {
+        console.log("toggle open -> ");
+        setOpen(!open);
+        console.log(open);
+    };
+    const [localValue, setLocalValue] = useState(value);
+    const ref = useShowEntryEvent(id);
+    const handleInputCallback = useMemo(() => {
+        return debounce(({
+                             target
+                         }) => onInput(target.value.length ? target.value : undefined));
+    }, [onInput, debounce]);
+    const handleInput = e => {
+        handleInputCallback(e);
+        autoResize && resizeToContents(e.target);
+        setLocalValue(e.target.value);
+    };
+    useLayoutEffect(() => {
+        autoResize && resizeToContents(ref.current);
+    }, []);
+    useEffect(() => {
+        if (value === localValue) {
+            return;
+        }
+        setLocalValue(value);
+    }, [value]);
+    const onInput = newValue => {
+        // let newValidationError = null;
+        // if (isFunction(validate)) {
+        //   newValidationError = validate(newValue) || null;
+        // }
+        // if (newValidationError) {
+        //   setCachedInvalidValue(newValue);
+        // } else {
+        //   setValue(newValue);
+        // }
+        // setLocalError(newValidationError);
+        setLocalValue(newValue);
+    };
+
+    return jsxs("div", {
+        class: "bio-properties-panel-group",
+        "data-group-id": 'group-' + id,
+        children: [
+            jsxs(
+                "div", {
+                    class: classnames('bio-properties-panel-group-header', open ? 'open' : ''),
+                    onClick: toggleOpen,
+                    children: [
+                        jsx(
+                            "div", {
+                                class: "bio-properties-panel-group-header-title",
+                                title: label,
+                                children: label
+                            }
+                        ),
+                        jsx(
+                            "div", {
+                                class: "bio-properties-panel-group-header-buttons",
+                                children: [
+                                    jsx(
+                                        "div", {
+                                            class: "bio-properties-panel-dot",
+                                            title: "Section contains data",
+                                        }
+                                    ),
+                                    jsx(
+                                        "button", {
+                                            class: "bio-properties-panel-group-header-button bio-properties-panel-arrow",
+                                            title: "Toggle section",
+                                            children: [
+                                                jsx(
+                                                    ArrowIcon, {
+                                                        class: open ? 'bio-properties-panel-arrow-down' : 'bio-properties-panel-arrow-right'
+                                                    }
+                                                )
+                                            ]
+                                        }
+                                    )
+                                ]
+                            }
+                        )
+                    ]
+                }
+            ),
+            jsx(
+                "div", {
+                    class: classnames('bio-properties-panel-group-entries', open ? 'open' : ''),
+                    children: [
+                        jsx(
+                            "div", {
+                                class: "bio-properties-panel-entry",
+                                "data-entry-id":"documentation",
+                                children: [
+                                    jsx(
+                                        "div", {
+                                            class: "bio-properties-panel-textarea",
+                                            children: [
+                                                jsx(
+                                                    "label", {
+                                                        for: `bio-properties-panel-` + id,
+                                                        class: "bio-properties-panel-label",
+                                                        children: label
+                                                    }
+                                                ),
+                                                jsx(
+                                                    "textarea", {
+                                                        ref: ref,
+                                                        id: `bio-properties-panel-` + id,
+                                                        name: id,
+                                                        spellCheck: "false",
+                                                        class: classnames('bio-properties-panel-input', monospace ? 'bio-properties-panel-input-monospace' : '', autoResize ? 'auto-resize' : ''),
+                                                        onInput: handleInput,
+                                                        onFocus: onFocus,
+                                                        onBlur: onBlur,
+                                                        rows: rows,
+                                                        value: localValue,
+                                                        disabled: disabled,
+                                                        "data-gramm": "false"
+                                                    }
+                                                )
+                                            ]
+                                        }
+                                    )
+                                ]
+                            }
+                        )
+                    ]
+                }
+            )
+        ]
+    });
+}
+
+function PlanqkRadioChoice(props) {
+    const {
+        id,
+        label,
+        title = 'please select',
+        value = '',
+        choices
+    } = props;
+    const [open, setOpen] = useLayoutState(['groups', id, 'open'], false);
+    const toggleOpen = () => {
+        console.log("toggle open radio choice -> ");
+        setOpen(!open);
+        console.log(open);
+    };
+    const [localValue, setLocalValue] = useState(value);
+    const ref = useShowEntryEvent(id);
+
+    return jsxs("div", {
+        class: "bio-properties-panel-group",
+        "data-group-id": 'group-' + id,
+        children: [
+            jsxs(
+                "div", {
+                    class: classnames('bio-properties-panel-group-header', open ? 'open' : ''),
+                    onClick: toggleOpen,
+                    children: [
+                        jsx(
+                            "div", {
+                                class: "bio-properties-panel-group-header-title",
+                                title: title,
+                                children: title
+                            }
+                        ),
+                        jsx(
+                            "div", {
+                                class: "bio-properties-panel-group-header-buttons",
+                                children: [
+                                    jsx(
+                                        "div", {
+                                            class: "bio-properties-panel-dot",
+                                            title: "Section contains data",
+                                        }
+                                    ),
+                                    jsx(
+                                        "button", {
+                                            class: "bio-properties-panel-group-header-button bio-properties-panel-arrow",
+                                            title: "Toggle section",
+                                            children: [
+                                                jsx(
+                                                    ArrowIcon, {
+                                                        class: open ? 'bio-properties-panel-arrow-down' : 'bio-properties-panel-arrow-right'
+                                                    }
+                                                )
+                                            ]
+                                        }
+                                    )
+                                ]
+                            }
+                        )
+                    ]
+                }
+            ),
+            jsx(
+                "div", {
+                    class: classnames('bio-properties-panel-group-entries', open ? 'open' : ''),
+                    children: [
+                        jsx(
+                            "div", {
+                                class: "bio-properties-panel-entry",
+                                "data-entry-id":"documentation",
+                                children: [
+                                    jsx(
+                                        "div", {
+                                            class: "bio-properties-panel-radio-choice",
+                                            children: [
+                                                jsx(
+                                                    "label", {
+                                                        for: `bio-properties-panel-` + id + '-1',
+                                                        class: "bio-properties-panel-label",
+                                                        children: choices[0]
+                                                    }
+                                                ),
+                                                jsx(
+                                                    "input", {
+                                                        ref: ref,
+                                                        id: `bio-properties-panel-` + id + '-1',
+                                                        name: id,
+                                                        type: "radio",
+                                                    }
+                                                ),
+                                                jsx(
+                                                    "label", {
+                                                        for: `bio-properties-panel-` + id + '-2',
+                                                        class: "bio-properties-panel-label",
+                                                        children: choices[1]
+                                                    }
+                                                ),
+                                                jsx(
+                                                    "input", {
+                                                        ref: ref,
+                                                        id: `bio-properties-panel-` + id + '-2',
+                                                        name: id,
+                                                        type: "radio",
+                                                    }
+                                                ),
+                                            ]
+                                        }
+                                    )
+                                ]
+                            }
+                        )
+                    ]
+                }
+            )
+        ]
+    });
 }

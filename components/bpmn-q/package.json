@@ -1,6 +1,6 @@
 {
   "name": "@anaqor/quantum-workflow-modeler",
-  "version": "1.3.16",
+  "version": "1.3.17",
   "description": "",
   "package name": "@anaqor/workflow-modeler",
   "main": "index.js",
