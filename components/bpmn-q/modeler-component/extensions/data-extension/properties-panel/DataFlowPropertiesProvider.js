@@ -8,7 +8,9 @@ import { getTransformationTaskConfiguration } from "../transf-task-configs/Trans
 import {useEffect, useLayoutEffect, useMemo, useState} from "@bpmn-io/properties-panel/preact/hooks";
 import {jsx, jsxs} from "@bpmn-io/properties-panel/preact/jsx-runtime";
 import classnames from "classnames";
-import {debounce, isFunction} from 'min-dash';
+import {debounce} from 'min-dash';
+import {useService} from "bpmn-js-properties-panel";
+import planqkDataMapProps from "./DataFlowProperties";
 
 const LOW_PRIORITY = 500;
 
@@ -67,7 +69,12 @@ export default function DataFlowPropertiesProvider(
         });
       }
 
-      // add group for displaying the content attribute of a DataMapObject as a key value map
+        // add properties group as the first group in list
+        if (is(element, consts.DATA_MAP_OBJECT) || is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
+            modifiedGroups.unshift(createPropertiesGroupForDataMapObject(element, translate));
+        }
+
+        // add group for displaying the content attribute of a DataMapObject as a key value map
       if (is(element, consts.DATA_MAP_OBJECT) || is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
         console.log("isElement DATA_MAP / INPUT / OUTPUT");
         modifiedGroups.push(createDataMapObjectGroupForContent(element, injector, translate));
@@ -133,6 +140,21 @@ DataFlowPropertiesProvider.$inject = [
 ];
 
 /**
+ * Creates a (properties)group to display the attributes defined in the properties section of data-flow-extension.json, i.e. schemaExample, inputFor, visibility
+ *
+ * @param element The given PlanQK data map object.
+ * @param {Function} translate The translate function of the bpmn-js modeler.
+ * @return {{entries: ([{component: (function(*): VNode<*>), isEdited: ((function(*): *)|*), id: string, element},{component: (function(*): VNode<*>), isEdited: ((function(*): *)|*), id: string, element},{component: (function(*): VNode<*>), isEdited: ((function(*): *)|*), id: string, element}]|*), id: string, label}}
+ */
+function createPropertiesGroupForDataMapObject(element, translate) {
+    return {
+        id: "dataMapProperties",
+        label: translate("Data Map Properties"),
+        entries: planqkDataMapProps(element),
+    };
+}
+
+/**
  * Creates a properties group for displaying the custom properties of a DataFlow data map object. This group contains
  * a key value map for the content attribute of the data map object.
  *
@@ -157,12 +179,11 @@ function createDataMapObjectGroupForContent(element, injector, translate) {
 
 function createDataMapObjectGroupForSchemaExample(element, injector, translate) {
   console.log("createDataMapObjectGroupForSchemaExample");
-  const attributeName = "schemaExample";
   let xxx = {
     // return {
     id: "dataMapObjectPropertiesForSchemaExample",
     label: translate("Schema Example"),
-    value: "otto",
+    value: element.businessObject.id,
     component: PlanqkTextArea,
   };
   console.log(xxx);
@@ -171,10 +192,9 @@ function createDataMapObjectGroupForSchemaExample(element, injector, translate) 
 
 function createDataMapObjectGroupForPrivatePublicChoice(element, injector, translate) {
     console.log("createDataMapObjectGroupForPrivatePublicChoice");
-    const attributeName = "visibility";
     let xxx = {
         // return {
-        id: "dataMapObjectPropertiesForVisibility",
+        id: "visibility",
         label: translate("Visibility"),
         title: translate("Visibility"),
         choices: ["private","public"],
@@ -186,10 +206,9 @@ function createDataMapObjectGroupForPrivatePublicChoice(element, injector, trans
 
 function createDataMapObjectGroupForDataParamChoice(element, injector, translate) {
     console.log("createDataMapObjectGroupForDataParamChoice");
-    const attributeName = "inputFor";
     let xxx = {
         // return {
-        id: "dataMapObjectPropertiesForInputFor",
+        id: "inputFor",
         label: translate("Input For"),
         title: translate("Input For"),
         choices: ["data","param"],
@@ -300,6 +319,7 @@ function PlanqkTextArea(props) {
     const {
         id,
         label,
+        element,
         value = '',
         disabled,
         monospace,
@@ -314,6 +334,7 @@ function PlanqkTextArea(props) {
         setOpen(!open);
         console.log(open);
     };
+    const modeling = useService("modeling");
     const [localValue, setLocalValue] = useState(value);
     const ref = useShowEntryEvent(id);
     const handleInputCallback = useMemo(() => {
@@ -321,10 +342,19 @@ function PlanqkTextArea(props) {
                              target
                          }) => onInput(target.value.length ? target.value : undefined));
     }, [onInput, debounce]);
+    // const getValue = () => {
+    //     return element.businessObject.schemaExample;
+    // };
+    const setValue = (value) => {
+        modeling.updateProperties(element, {
+            dataPoolLink: value,
+        });
+    };
     const handleInput = e => {
         handleInputCallback(e);
         autoResize && resizeToContents(e.target);
         setLocalValue(e.target.value);
+        setValue(e.target.value);
     };
     useLayoutEffect(() => {
         autoResize && resizeToContents(ref.current);
@@ -446,9 +476,10 @@ function PlanqkTextArea(props) {
 function PlanqkRadioChoice(props) {
     const {
         id,
-        label,
+        // label,
+        element,
         title = 'please select',
-        value = '',
+        // value = '',
         choices
     } = props;
     const [open, setOpen] = useLayoutState(['groups', id, 'open'], false);
@@ -457,8 +488,30 @@ function PlanqkRadioChoice(props) {
         setOpen(!open);
         console.log(open);
     };
-    const [localValue, setLocalValue] = useState(value);
+    // const [localValue, setLocalValue] = useState(value);
     const ref = useShowEntryEvent(id);
+    const modeling = useService("modeling");
+
+    const checked = (property,choice) => {
+        if( property === "inputFor" ) {
+            return element.businessObject.inputFor === choice
+        } else if(property === "visibility") {
+            return element.businessObject.visibility === choice
+        }
+        return false;
+    }
+
+    const onChange = (value) => {
+        if( value.currentTarget.name === "propertyGroup-inputFor" ) {
+            modeling.updateProperties(element, {
+                inputFor: value.currentTarget.id,
+            });
+        } else {
+            modeling.updateProperties(element, {
+                visibility: value.currentTarget.id,
+            });
+        }
+    };
 
     return jsxs("div", {
         class: "bio-properties-panel-group",
@@ -520,7 +573,7 @@ function PlanqkRadioChoice(props) {
                                             children: [
                                                 jsx(
                                                     "label", {
-                                                        for: `bio-properties-panel-` + id + '-1',
+                                                        for: choices[0],
                                                         class: "bio-properties-panel-label",
                                                         children: choices[0]
                                                     }
@@ -528,14 +581,16 @@ function PlanqkRadioChoice(props) {
                                                 jsx(
                                                     "input", {
                                                         ref: ref,
-                                                        id: `bio-properties-panel-` + id + '-1',
-                                                        name: id,
+                                                        id: choices[0],
+                                                        name: 'propertyGroup-' + id,
                                                         type: "radio",
+                                                        checked: checked(id,choices[0]),
+                                                        onChange,
                                                     }
                                                 ),
                                                 jsx(
                                                     "label", {
-                                                        for: `bio-properties-panel-` + id + '-2',
+                                                        for: choices[1],
                                                         class: "bio-properties-panel-label",
                                                         children: choices[1]
                                                     }
@@ -543,9 +598,11 @@ function PlanqkRadioChoice(props) {
                                                 jsx(
                                                     "input", {
                                                         ref: ref,
-                                                        id: `bio-properties-panel-` + id + '-2',
-                                                        name: id,
+                                                        id: choices[1],
+                                                        name: 'propertyGroup-' + id,
                                                         type: "radio",
+                                                        checked: checked(id,choices[1]),
+                                                        onChange,
                                                     }
                                                 ),
                                             ]

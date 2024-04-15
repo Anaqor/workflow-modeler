@@ -185,3 +185,17 @@
   background-repeat: no-repeat;
   display: inline-block;
 }
+
+.planqk-properties-panel-radio-choice-group {
+   margin-top: 20px;
+ }
+.planqk-properties-panel-radio-choice-item-set {
+  display: flex;
+  justify-content: space-around;
+}
+
+.planqk-properties-panel-radio-choice-item {
+  display: flex;
+}
+
+
