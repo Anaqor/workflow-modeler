@@ -1,5 +1,6 @@
 import React from "react";
-import planqkStyles from "./resources/css/planqk-icons.css";
+import planqkIcons from "./resources/css/planqk-icons.css";
+import planqkStyles from "./resources/css/planqk-styles.css";
 import PlanQKExtensionModule from "./";
 import { startPlanqkReplacementProcess } from "./exec-completion/PlanQKServiceTaskCompletion";
 import TransformationButton from "../../editor/ui/TransformationButton";
@@ -13,7 +14,7 @@ export default {
   name: "planqk",
   extensionModule: PlanQKExtensionModule,
   moddleDescription: planqkModdleDescriptor,
-  styling: [planqkStyles],
+  styling: [planqkStyles, planqkIcons],
   transformExtensionButton: (
     <TransformationButton
       name="PlanQK Transformation"

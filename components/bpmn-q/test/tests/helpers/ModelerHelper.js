@@ -84,6 +84,7 @@ const pluginConfigs = [
           consumerSecret: "app2ConsumerSecret",
         },
       },
+      openApiMap: [],
       dataPools: [dp1, dp2, dp3],
     },
   },

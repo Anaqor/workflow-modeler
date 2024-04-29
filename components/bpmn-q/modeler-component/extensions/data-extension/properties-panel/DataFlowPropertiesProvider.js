@@ -1,11 +1,10 @@
 import keyValueMap from "./KeyValueMap";
 import { is } from "bpmn-js/lib/util/ModelUtil";
-import {ListGroup, useLayoutState, useShowEntryEvent} from "@bpmn-io/properties-panel";
+import {ListGroup, TextAreaEntry, useLayoutState, useShowEntryEvent} from "@bpmn-io/properties-panel";
 import * as consts from "../Constants";
 import * as configConsts from "../../../editor/configurations/Constants";
 import ConfigurationsProperties from "../../../editor/configurations/ConfigurationsProperties";
 import { getTransformationTaskConfiguration } from "../transf-task-configs/TransformationTaskConfigurations";
-import {useEffect, useLayoutEffect, useMemo, useState} from "@bpmn-io/properties-panel/preact/hooks";
 import {jsx, jsxs} from "@bpmn-io/properties-panel/preact/jsx-runtime";
 import classnames from "classnames";
 import {debounce} from 'min-dash';
@@ -39,9 +38,9 @@ ArrowIcon.defaultProps = {
  * @param injector Injector module of the bpmn-js modeler used to load the required dependencies.
  */
 export default function DataFlowPropertiesProvider(
-  propertiesPanel,
-  translate,
-  injector
+    propertiesPanel,
+    translate,
+    injector
 ) {
   /**
    * Return the property groups provided for the given element.
@@ -63,29 +62,52 @@ export default function DataFlowPropertiesProvider(
 
       // remove unwanted groups
       if (is(element, consts.DATA_MAP_OBJECT) || is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
-        const removeLabels = ["Extension properties"];
+        const removeLabels = ["Extension properties", "Documentation"];
         modifiedGroups = groups.filter(function(item) {
           return removeLabels.indexOf(item.label) === -1;
         });
       }
+      if (is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
+        const removeLabels = ["General"];
+        modifiedGroups = groups.filter(function(item) {
+            return removeLabels.indexOf(item.label) === -1;
+        });
+      }
 
-        // add properties group as the first group in list
-        if (is(element, consts.DATA_MAP_OBJECT) || is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
-            modifiedGroups.unshift(createPropertiesGroupForDataMapObject(element, translate));
-        }
-
-        // add group for displaying the content attribute of a DataMapObject as a key value map
+      // add properties group as the first group in list
       if (is(element, consts.DATA_MAP_OBJECT) || is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
-        console.log("isElement DATA_MAP / INPUT / OUTPUT");
+        modifiedGroups.unshift(createPropertiesGroupForDataMapObject(element, translate));
+      }
+
+      // add group for displaying the content attribute of a DataMapObject as a key value map
+      if (is(element, consts.DATA_MAP_OBJECT) || is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
         modifiedGroups.push(createDataMapObjectGroupForContent(element, injector, translate));
+      }
+
+      // add group for the automatic naming of the node
+      // this only works for input/output nodes
+      if (is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
+        modifiedGroups.push(createObjectGroupForNodeNaming(element));
       }
 
       // add further groups for Input-DataMap
       if (is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT)) {
-        console.log("isElement INPUT");
         modifiedGroups.push(createDataMapObjectGroupForSchemaExample(element, injector, translate));
         modifiedGroups.push(createDataMapObjectGroupForPrivatePublicChoice(element, injector, translate));
+        if( !element.businessObject.visibility ) {
+          //set default for visibility to "public"
+          Object.defineProperty(element.businessObject, "visibility", {value: "public", writable: true});
+        }
         modifiedGroups.push(createDataMapObjectGroupForDataParamChoice(element, injector, translate));
+        if( !element.businessObject.inputFor ) {
+          //set default for inputFor to "data"
+          Object.defineProperty(element.businessObject, "inputFor", {value: "data", writable: true});
+        }
+      }
+
+      // add further groups for Output-DataMap
+      if (is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
+        modifiedGroups.push(createDataMapObjectGroupForSchemaExample(element, injector, translate));
       }
 
       // add group for displaying the details attribute of a DataStoreMap as a key value map
@@ -183,11 +205,22 @@ function createDataMapObjectGroupForSchemaExample(element, injector, translate) 
     // return {
     id: "dataMapObjectPropertiesForSchemaExample",
     label: translate("Schema Example"),
-    value: element.businessObject.id,
     component: PlanqkTextArea,
   };
   console.log(xxx);
   return xxx;
+}
+
+function createObjectGroupForNodeNaming(element) {
+    console.log("createObjectGroupForNodeNaming");
+    let xxx = {
+        // return {
+        id: "dataMapObjectNaming",
+        element: element,
+        component: PlanqkNodeNaming,
+    };
+    console.log(xxx);
+    return xxx;
 }
 
 function createDataMapObjectGroupForPrivatePublicChoice(element, injector, translate) {
@@ -308,75 +341,25 @@ function createTransformationTaskConfigurationsGroup(
 }
 
 
-function resizeToContents(element) {
-  element.style.height = 'auto';
-
-  // a 2px pixel offset is required to prevent scrollbar from
-  // appearing on OS with a full length scroll bar (Windows/Linux)
-  element.style.height = `${element.scrollHeight + 2}px`;
-}
 function PlanqkTextArea(props) {
     const {
         id,
         label,
         element,
-        value = '',
-        disabled,
-        monospace,
-        onFocus,
-        onBlur,
-        autoResize,
-        rows = autoResize ? 1 : 2
     } = props;
     const [open, setOpen] = useLayoutState(['groups', id, 'open'], false);
     const toggleOpen = () => {
-        console.log("toggle open -> ");
         setOpen(!open);
-        console.log(open);
     };
     const modeling = useService("modeling");
-    const [localValue, setLocalValue] = useState(value);
-    const ref = useShowEntryEvent(id);
-    const handleInputCallback = useMemo(() => {
-        return debounce(({
-                             target
-                         }) => onInput(target.value.length ? target.value : undefined));
-    }, [onInput, debounce]);
-    // const getValue = () => {
-    //     return element.businessObject.schemaExample;
-    // };
+
+    const getValue = () => {
+        return element.businessObject.schemaExample || '';
+    };
     const setValue = (value) => {
         modeling.updateProperties(element, {
-            dataPoolLink: value,
+            schemaExample: value,
         });
-    };
-    const handleInput = e => {
-        handleInputCallback(e);
-        autoResize && resizeToContents(e.target);
-        setLocalValue(e.target.value);
-        setValue(e.target.value);
-    };
-    useLayoutEffect(() => {
-        autoResize && resizeToContents(ref.current);
-    }, []);
-    useEffect(() => {
-        if (value === localValue) {
-            return;
-        }
-        setLocalValue(value);
-    }, [value]);
-    const onInput = newValue => {
-        // let newValidationError = null;
-        // if (isFunction(validate)) {
-        //   newValidationError = validate(newValue) || null;
-        // }
-        // if (newValidationError) {
-        //   setCachedInvalidValue(newValue);
-        // } else {
-        //   setValue(newValue);
-        // }
-        // setLocalError(newValidationError);
-        setLocalValue(newValue);
     };
 
     return jsxs("div", {
@@ -433,36 +416,16 @@ function PlanqkTextArea(props) {
                                 class: "bio-properties-panel-entry",
                                 "data-entry-id":"documentation",
                                 children: [
-                                    jsx(
-                                        "div", {
-                                            class: "bio-properties-panel-textarea",
-                                            children: [
-                                                jsx(
-                                                    "label", {
-                                                        for: `bio-properties-panel-` + id,
-                                                        class: "bio-properties-panel-label",
-                                                        children: label
-                                                    }
-                                                ),
-                                                jsx(
-                                                    "textarea", {
-                                                        ref: ref,
-                                                        id: `bio-properties-panel-` + id,
-                                                        name: id,
-                                                        spellCheck: "false",
-                                                        class: classnames('bio-properties-panel-input', monospace ? 'bio-properties-panel-input-monospace' : '', autoResize ? 'auto-resize' : ''),
-                                                        onInput: handleInput,
-                                                        onFocus: onFocus,
-                                                        onBlur: onBlur,
-                                                        rows: rows,
-                                                        value: localValue,
-                                                        disabled: disabled,
-                                                        "data-gramm": "false"
-                                                    }
-                                                )
-                                            ]
-                                        }
-                                    )
+                                    TextAreaEntry({
+                                        element,
+                                        id: "data_map_description",
+                                        label: "Schema Example",
+                                        description: "Provide an OpenAPI specification example of the schema.",
+                                        getValue,
+                                        setValue,
+                                        debounce,
+                                        rows: 3,
+                                    })
                                 ]
                             }
                         )
@@ -473,22 +436,53 @@ function PlanqkTextArea(props) {
     });
 }
 
+function PlanqkNodeNaming(props) {
+    const {
+        element,
+    } = props;
+    const modeling = useService("modeling");
+
+    const computeNameOfNode = () => {
+        let targetNodeNames = '';
+        let connectors = is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) ? element.outgoing : element.incoming;
+        if(connectors.length > 0) {
+            connectors.forEach( (connector) => {
+                let associationLine = null;
+                element.parent.children.forEach((child) => {
+                    if (child.id === connector.id) {
+                        associationLine = child;
+                    }
+                })
+                if(associationLine != null) {
+                    targetNodeNames += associationLine.businessObject.$parent.name;
+                }
+            })
+        }
+        const prefix = is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) ? 'Input' + element.businessObject.inputFor : 'Output';
+        return prefix + (targetNodeNames.length > 0 ? '_' + targetNodeNames : '');
+    }
+    const adjustNameOfNode = () => {
+        const nameShouldBe = computeNameOfNode();
+        if( element.businessObject.name !== nameShouldBe ) {
+            modeling.updateProperties(element, {name: nameShouldBe});
+        }
+    }
+    adjustNameOfNode();
+
+    return '';
+}
+
 function PlanqkRadioChoice(props) {
     const {
         id,
-        // label,
         element,
         title = 'please select',
-        // value = '',
         choices
     } = props;
     const [open, setOpen] = useLayoutState(['groups', id, 'open'], false);
     const toggleOpen = () => {
-        console.log("toggle open radio choice -> ");
         setOpen(!open);
-        console.log(open);
     };
-    // const [localValue, setLocalValue] = useState(value);
     const ref = useShowEntryEvent(id);
     const modeling = useService("modeling");
 
@@ -564,12 +558,12 @@ function PlanqkRadioChoice(props) {
                     children: [
                         jsx(
                             "div", {
-                                class: "bio-properties-panel-entry",
-                                "data-entry-id":"documentation",
+                                class: "planqk-properties-panel-radio-choice-item-set bio-properties-panel-entry",
+                                title: title,
                                 children: [
                                     jsx(
                                         "div", {
-                                            class: "bio-properties-panel-radio-choice",
+                                            class: "planqk-properties-panel-radio-choice-item",
                                             children: [
                                                 jsx(
                                                     "label", {
@@ -583,11 +577,19 @@ function PlanqkRadioChoice(props) {
                                                         ref: ref,
                                                         id: choices[0],
                                                         name: 'propertyGroup-' + id,
+                                                        selection: choices[0],
                                                         type: "radio",
                                                         checked: checked(id,choices[0]),
                                                         onChange,
                                                     }
                                                 ),
+                                            ]
+                                        },
+                                    ),
+                                    jsx(
+                                        "div", {
+                                            class: "planqk-properties-panel-radio-choice-item",
+                                            children: [
                                                 jsx(
                                                     "label", {
                                                         for: choices[1],
@@ -600,6 +602,7 @@ function PlanqkRadioChoice(props) {
                                                         ref: ref,
                                                         id: choices[1],
                                                         name: 'propertyGroup-' + id,
+                                                        selection: choices[1],
                                                         type: "radio",
                                                         checked: checked(id,choices[1]),
                                                         onChange,
