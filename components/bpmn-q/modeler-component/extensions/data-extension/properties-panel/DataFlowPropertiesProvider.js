@@ -63,13 +63,13 @@ export default function DataFlowPropertiesProvider(
       // remove unwanted groups
       if (is(element, consts.DATA_MAP_OBJECT) || is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
         const removeLabels = ["Extension properties", "Documentation"];
-        modifiedGroups = groups.filter(function(item) {
+        modifiedGroups = modifiedGroups.filter(function(item) {
           return removeLabels.indexOf(item.label) === -1;
         });
       }
       if (is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
         const removeLabels = ["General"];
-        modifiedGroups = groups.filter(function(item) {
+        modifiedGroups = modifiedGroups.filter(function(item) {
             return removeLabels.indexOf(item.label) === -1;
         });
       }
