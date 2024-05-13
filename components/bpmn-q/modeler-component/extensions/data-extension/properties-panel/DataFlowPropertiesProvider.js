@@ -75,9 +75,9 @@ export default function DataFlowPropertiesProvider(
       }
 
       // add properties group as the first group in list
-      if (is(element, consts.DATA_MAP_OBJECT) || is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
-        modifiedGroups.unshift(createPropertiesGroupForDataMapObject(element, translate));
-      }
+      // if (is(element, consts.DATA_MAP_OBJECT) || is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
+      //   modifiedGroups.unshift(createPropertiesGroupForDataMapObject(element, translate));
+      // }
 
       // add group for displaying the content attribute of a DataMapObject as a key value map
       if (is(element, consts.DATA_MAP_OBJECT) || is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
@@ -454,11 +454,11 @@ function PlanqkNodeNaming(props) {
                     }
                 })
                 if(associationLine != null) {
-                    targetNodeNames += associationLine.businessObject.$parent.name;
+                    targetNodeNames += (associationLine.businessObject.$parent.name ? associationLine.businessObject.$parent.name : '');
                 }
             })
         }
-        const prefix = is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) ? 'Input' + element.businessObject.inputFor : 'Output';
+        const prefix = is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) ? 'Input_' + element.businessObject.inputFor : 'Output';
         return prefix + (targetNodeNames.length > 0 ? '_' + targetNodeNames : '');
     }
     const adjustNameOfNode = () => {

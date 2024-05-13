@@ -43,14 +43,16 @@ export function initEditorEventHandler(newModelerComponent) {
  *
  * @param type The type of the event, one of the workflowEventTypes
  * @param workflowXml The workflow diagram as xml string the current event is triggered for.
+ * @param workflowSvg The SVG representation of the workflow.
  * @param workflowName The name of the workflow diagram the current event is triggered for.
  * @returns {*} Boolean, true if either event's cancelable attribute value is false or its preventDefault() method was
  *                          not invoked, and false otherwise.
  */
-export function dispatchWorkflowEvent(type, workflowXml, workflowName) {
+export function dispatchWorkflowEvent(type, workflowXml, workflowSvg, workflowName) {
   const newEvent = new CustomEvent(type, {
     detail: {
       workflowName: workflowName,
+      workflowSvg: workflowSvg,
       workflow: workflowXml,
     },
     cancelable: true,

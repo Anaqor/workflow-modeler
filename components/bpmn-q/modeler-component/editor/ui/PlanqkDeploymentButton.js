@@ -53,7 +53,7 @@ export default function PlanqkDeploymentButton(props) {
     }
     console.log("Camunda BPMN resulting from transformation:", replaceResult.xml);
 
-    await dispatchWorkflowTransformedEvent(replaceResult.xml);
+    await dispatchWorkflowTransformedEvent(modeler, replaceResult.xml);
 
     NotificationHandler.getInstance().displayNotification({
       title: "Deployment to Camunda engine started",
