@@ -60,38 +60,17 @@ export default function DataFlowPropertiesProvider(
     return function (groups) {
       let modifiedGroups = groups;
 
-      // remove unwanted groups
-      if (is(element, consts.DATA_MAP_OBJECT) || is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
-        const removeLabels = ["Extension properties", "Documentation"];
+      if (is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT)) {
+        // remove unwanted groups
+        const removeLabels = ["General", "Extension properties", "Documentation"];
         modifiedGroups = modifiedGroups.filter(function(item) {
           return removeLabels.indexOf(item.label) === -1;
         });
-      }
-      if (is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
-        const removeLabels = ["General"];
-        modifiedGroups = modifiedGroups.filter(function(item) {
-            return removeLabels.indexOf(item.label) === -1;
-        });
-      }
 
-      // add properties group as the first group in list
-      // if (is(element, consts.DATA_MAP_OBJECT) || is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
-      //   modifiedGroups.unshift(createPropertiesGroupForDataMapObject(element, translate));
-      // }
-
-      // add group for displaying the content attribute of a DataMapObject as a key value map
-      if (is(element, consts.DATA_MAP_OBJECT) || is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
+        // add group for displaying the content attribute of a DataMapObject as a key value map
         modifiedGroups.push(createDataMapObjectGroupForContent(element, injector, translate));
-      }
 
-      // add group for the automatic naming of the node
-      // this only works for input/output nodes
-      if (is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) || is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
-        modifiedGroups.push(createObjectGroupForNodeNaming(element));
-      }
-
-      // add further groups for Input-DataMap
-      if (is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT)) {
+        // add further groups for Input-DataMap
         modifiedGroups.push(createDataMapObjectGroupForSchemaExample(element, injector, translate));
         modifiedGroups.push(createDataMapObjectGroupForPrivatePublicChoice(element, injector, translate));
         if( !element.businessObject.visibility ) {
@@ -103,11 +82,49 @@ export default function DataFlowPropertiesProvider(
           //set default for inputFor to "data"
           Object.defineProperty(element.businessObject, "inputFor", {value: "data", writable: true});
         }
+
+        // add group for the automatic naming of the node
+        // this only works for input/output nodes
+        modifiedGroups.push(createObjectGroupForNodeNaming(element));
       }
 
-      // add further groups for Output-DataMap
       if (is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
+        // remove unwanted groups
+        const removeLabels = ["General", "Extension properties", "Documentation"];
+        modifiedGroups = modifiedGroups.filter(function(item) {
+          return removeLabels.indexOf(item.label) === -1;
+        });
+
+        // add further groups for Output-DataMap
         modifiedGroups.push(createDataMapObjectGroupForSchemaExample(element, injector, translate));
+        modifiedGroups.push(createDataMapObjectGroupForPrivatePublicChoice(element, injector, translate));
+        if( !element.businessObject.visibility ) {
+          //set default for visibility to "public"
+          Object.defineProperty(element.businessObject, "visibility", {value: "public", writable: true});
+        }
+
+        // add group for the automatic naming of the node
+        // this only works for input/output nodes
+        modifiedGroups.push(createObjectGroupForNodeNaming(element));
+      }
+
+      if (is(element, consts.DATA_MAP_OBJECT) && !is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) && !is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
+        // remove unwanted groups
+        const removeLabels = ["Extension properties", "Documentation"];
+        modifiedGroups = modifiedGroups.filter(function(item) {
+          return removeLabels.indexOf(item.label) === -1;
+        });
+
+        // add group for displaying the content attribute of a DataMapObject as a key value map
+        modifiedGroups.push(createDataMapObjectGroupForContent(element, injector, translate));
+
+        // add further groups for Intermediate-DataMap
+        modifiedGroups.push(createDataMapObjectGroupForSchemaExample(element, injector, translate));
+        modifiedGroups.push(createDataMapObjectGroupForPrivatePublicChoice(element, injector, translate));
+        if( !element.businessObject.visibility ) {
+          //set default for visibility to "public"
+          Object.defineProperty(element.businessObject, "visibility", {value: "public", writable: true});
+        }
       }
 
       // add group for displaying the details attribute of a DataStoreMap as a key value map
