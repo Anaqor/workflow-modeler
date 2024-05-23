@@ -30,6 +30,16 @@
           "name": "visibility",
           "type": "dataflow:DataObjectVisibility",
           "isAttr": true
+        },
+        {
+          "name": "automaticNameCreation",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "editableName",
+          "type": "String",
+          "isAttr": true
         }
       ]
     },

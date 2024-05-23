@@ -194,6 +194,10 @@
   justify-content: space-around;
 }
 
+.planqk-properties-panel-item-set {
+  justify-content: space-around;
+}
+
 .planqk-properties-panel-radio-choice-item {
   display: flex;
 }
