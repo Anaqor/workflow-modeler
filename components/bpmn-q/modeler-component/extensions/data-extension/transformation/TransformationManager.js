@@ -69,8 +69,12 @@ export async function startDataFlowReplacementProcess(xml) {
   for (let transformationAssociation of transformationAssociations) {
     // if source === DataMapObject: expressions als inputs im target
     if (
-      ((transformationAssociation.source.type === consts.DATA_MAP_OBJECT) || (transformationAssociation.source.type === consts.PROCESS_INPUT_DATA_MAP_OBJECT)) &&
-      ((transformationAssociation.target.type !== consts.DATA_MAP_OBJECT) && (transformationAssociation.target.type !== consts.PROCESS_OUTPUT_DATA_MAP_OBJECT))
+      (transformationAssociation.source.type === consts.DATA_MAP_OBJECT ||
+        transformationAssociation.source.type ===
+          consts.PROCESS_INPUT_DATA_MAP_OBJECT) &&
+      transformationAssociation.target.type !== consts.DATA_MAP_OBJECT &&
+      transformationAssociation.target.type !==
+        consts.PROCESS_OUTPUT_DATA_MAP_OBJECT
     ) {
       targetActivityElement = transformationAssociation.target;
 
@@ -89,8 +93,12 @@ export async function startDataFlowReplacementProcess(xml) {
 
     // if target && source === DataMapObject: add expressions to content of target data map object
     if (
-      ((transformationAssociation.source.type === consts.DATA_MAP_OBJECT) || (transformationAssociation.source.type === consts.PROCESS_INPUT_DATA_MAP_OBJECT)) &&
-      ((transformationAssociation.target.type === consts.DATA_MAP_OBJECT) || (transformationAssociation.target.type === consts.PROCESS_OUTPUT_DATA_MAP_OBJECT))
+      (transformationAssociation.source.type === consts.DATA_MAP_OBJECT ||
+        transformationAssociation.source.type ===
+          consts.PROCESS_INPUT_DATA_MAP_OBJECT) &&
+      (transformationAssociation.target.type === consts.DATA_MAP_OBJECT ||
+        transformationAssociation.target.type ===
+          consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)
     ) {
       targetDataMapObject = transformationAssociation.target;
       sourceDataMapObject = transformationAssociation.source;
@@ -142,36 +150,41 @@ export async function startDataFlowReplacementProcess(xml) {
   });
   console.log("Found " + dataAssociations.length + " DataAssociations.");
 
-  let source, target, dataMapObject, activity, businessObject;
+  let source, target, dataMapObject, activity, dataObjectBo;
 
   for (let dataAssociation of dataAssociations) {
     source = dataAssociation.source;
     target = dataAssociation.target;
 
     // if source === DataMapObject: content als input in target activity
-    if ((source.type === consts.DATA_MAP_OBJECT) || (source.type === consts.PROCESS_INPUT_DATA_MAP_OBJECT)) {
+    if (
+      source.type === consts.DATA_MAP_OBJECT ||
+      source.type === consts.PROCESS_INPUT_DATA_MAP_OBJECT
+    ) {
       activity = target;
       dataMapObject = source;
-      businessObject = dataMapObject.businessObject;
+      dataObjectBo = dataMapObject.businessObject;
 
       addCamundaInputMapParameter(
         activity.businessObject,
-        businessObject.name,
-        businessObject.get(consts.CONTENT),
+        dataObjectBo,
         bpmnFactory
       );
     }
 
     // if target === DataMapObject: content als output in source
-    if ((target.type === consts.DATA_MAP_OBJECT) || (target.type === consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
+    if (
+      target.type === consts.DATA_MAP_OBJECT ||
+      target.type === consts.PROCESS_OUTPUT_DATA_MAP_OBJECT
+    ) {
       dataMapObject = target;
       activity = source;
-      businessObject = dataMapObject.businessObject;
+      dataObjectBo = dataMapObject.businessObject;
 
       if (source.type === "bpmn:StartEvent") {
-        const name = businessObject.get("name");
+        const name = dataObjectBo.get("name");
 
-        for (let c of businessObject.get(consts.CONTENT)) {
+        for (let c of dataObjectBo.get(consts.CONTENT)) {
           let formField = {
             defaultValue: c.value,
             id: name + "." + c.name,
@@ -189,8 +202,12 @@ export async function startDataFlowReplacementProcess(xml) {
       } else {
         addCamundaOutputParameter(
           activity.businessObject,
-          businessObject.name,
-          "${result}",
+          {
+            name: dataObjectBo.name,
+            value: "${result}",
+            visibility: dataObjectBo.visibility,
+            inputFor: null,
+          },
           bpmnFactory
         );
       }
@@ -284,23 +301,12 @@ function transformDataMapObjects(
   let elementRegistry = modeler.get("elementRegistry");
 
   // get all data map objects of the current process including subprocesses
-  const dataObjectMaps = getAllElementsInProcess(
+  const dataObjectMaps = getAllElementsForProcess(
     rootProcess,
     elementRegistry,
     consts.DATA_MAP_OBJECT
-  ).concat(
-    getAllElementsInProcess(
-      rootProcess,
-      elementRegistry,
-      consts.PROCESS_INPUT_DATA_MAP_OBJECT
-    )
-  ).concat(
-    getAllElementsInProcess(
-      rootProcess,
-      elementRegistry,
-      consts.PROCESS_OUTPUT_DATA_MAP_OBJECT
-    )
   );
+
   console.log(
     "Found " + dataObjectMaps.length + " DataObjectMapReferences to replace."
   );
@@ -515,11 +521,12 @@ function transformTransformationTask(
       return { success: false, failedData: transformationTask };
     }
 
-    // add parameters attribute as camunda map to service task inputs
     addCamundaInputMapParameter(
       result.element.businessObject,
-      consts.PARAMETERS,
-      transformationTask.get(consts.PARAMETERS),
+      {
+        name: consts.PARAMETERS,
+        [consts.CONTENT]: transformationTask.get(consts.PARAMETERS),
+      },
       bpmnFactory
     );
   }

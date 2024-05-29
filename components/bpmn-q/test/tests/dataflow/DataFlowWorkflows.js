@@ -10,6 +10,94 @@ export const SPLIT_MERGE_WORKFLOW =
 export const INPUT_TRANSFORMATION_ASSOCIATION =
   '<?xml version="1.0" encoding="UTF-8"?> <bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dataflow="https://github.com/data/transformation" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">   <bpmn2:process id="Process_1" isExecutable="false">     <dataflow:inputTransformationAssociation id="InputTransformationAssociation_1sefptg" sourceRef="Data1" targetRef="Task1">       <dataflow:keyValueEntry name="Beta" value="${Data1.b}" />     </dataflow:inputTransformationAssociation>     <dataflow:inputTransformationAssociation id="InputTransformationAssociation_0dplvcn" sourceRef="Data1" targetRef="Task2">       <dataflow:keyValueEntry name="alpha" value="${Data1.a}" />     </dataflow:inputTransformationAssociation>     <bpmn2:startEvent id="Start1" name="Start1">       <bpmn2:outgoing>Flow_1kly12f</bpmn2:outgoing>     </bpmn2:startEvent>     <bpmn2:task id="Task1" name="Task1">       <bpmn2:incoming>Flow_1kly12f</bpmn2:incoming>       <bpmn2:outgoing>Flow_0cs2qks</bpmn2:outgoing>     </bpmn2:task>     <bpmn2:sequenceFlow id="Flow_1kly12f" sourceRef="Start1" targetRef="Task1" />     <bpmn2:task id="Task2" name="Task2">       <bpmn2:extensionElements>         <camunda:inputOutput>           <camunda:inputParameter name="Input1">input</camunda:inputParameter>         </camunda:inputOutput>       </bpmn2:extensionElements>       <bpmn2:incoming>Flow_0cs2qks</bpmn2:incoming>       <bpmn2:outgoing>Flow_0a66tja</bpmn2:outgoing>     </bpmn2:task>     <bpmn2:sequenceFlow id="Flow_0cs2qks" sourceRef="Task1" targetRef="Task2" />     <bpmn2:endEvent id="Event_18huw1s" name="End1">       <bpmn2:incoming>Flow_0a66tja</bpmn2:incoming>     </bpmn2:endEvent>     <bpmn2:sequenceFlow id="Flow_0a66tja" sourceRef="Task2" targetRef="Event_18huw1s" />     <dataflow:dataMapObject id="Data1" name="Data1" dataObjectRef="DataObject_0lngn18">       <dataflow:keyValueEntry name="a" value="1" />       <dataflow:keyValueEntry name="b" value="2" />     </dataflow:dataMapObject>     <bpmn2:dataObject id="DataObject_0lngn18" />   </bpmn2:process>   <bpmndi:BPMNDiagram id="BPMNDiagram_1">     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="Start1">         <dc:Bounds x="242" y="262" width="36" height="36" />         <bpmndi:BPMNLabel>           <dc:Bounds x="245" y="305" width="30" height="14" />         </bpmndi:BPMNLabel>       </bpmndi:BPMNShape>       <bpmndi:BPMNShape id="Activity_0aawyos_di" bpmnElement="Task1">         <dc:Bounds x="330" y="240" width="100" height="80" />         <bpmndi:BPMNLabel />       </bpmndi:BPMNShape>       <bpmndi:BPMNShape id="Activity_122q4z7_di" bpmnElement="Task2">         <dc:Bounds x="490" y="240" width="100" height="80" />         <bpmndi:BPMNLabel />       </bpmndi:BPMNShape>       <bpmndi:BPMNShape id="Event_18huw1s_di" bpmnElement="Event_18huw1s">         <dc:Bounds x="652" y="262" width="36" height="36" />         <bpmndi:BPMNLabel>           <dc:Bounds x="658" y="305" width="25" height="14" />         </bpmndi:BPMNLabel>       </bpmndi:BPMNShape>       <bpmndi:BPMNShape id="DataMapObject_1rsggqw_di" bpmnElement="Data1">         <dc:Bounds x="362" y="125" width="36" height="50" />         <bpmndi:BPMNLabel>           <dc:Bounds x="366" y="95" width="29" height="14" />         </bpmndi:BPMNLabel>       </bpmndi:BPMNShape>       <bpmndi:BPMNEdge id="InputTransformationAssociation_1sefptg_di" bpmnElement="InputTransformationAssociation_1sefptg">         <di:waypoint x="380" y="175" />         <di:waypoint x="380" y="240" />       </bpmndi:BPMNEdge>       <bpmndi:BPMNEdge id="InputTransformationAssociation_0dplvcn_di" bpmnElement="InputTransformationAssociation_0dplvcn">         <di:waypoint x="398" y="150" />         <di:waypoint x="540" y="150" />         <di:waypoint x="540" y="240" />       </bpmndi:BPMNEdge>       <bpmndi:BPMNEdge id="Flow_1kly12f_di" bpmnElement="Flow_1kly12f">         <di:waypoint x="278" y="280" />         <di:waypoint x="330" y="280" />       </bpmndi:BPMNEdge>       <bpmndi:BPMNEdge id="Flow_0cs2qks_di" bpmnElement="Flow_0cs2qks">         <di:waypoint x="430" y="280" />         <di:waypoint x="490" y="280" />       </bpmndi:BPMNEdge>       <bpmndi:BPMNEdge id="Flow_0a66tja_di" bpmnElement="Flow_0a66tja">         <di:waypoint x="590" y="280" />         <di:waypoint x="652" y="280" />       </bpmndi:BPMNEdge>     </bpmndi:BPMNPlane>   </bpmndi:BPMNDiagram> </bpmn2:definitions> ';
 
+export const INPUT_DO_PARAMS_DO_OUTPUT_DO =
+  '<?xml version="1.0" encoding="UTF-8"?>' +
+  '<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dataflow="https://github.com/data/transformation" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:planqk="https://platform.planqk.de" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">' +
+  '   <bpmn2:process id="Process_1" isExecutable="true">' +
+  '      <bpmn2:startEvent id="StartEvent_1">' +
+  "         <bpmn2:outgoing>Flow_1tyjp1r</bpmn2:outgoing>" +
+  "      </bpmn2:startEvent>" +
+  '      <bpmn2:task id="Activity_0bs46dn" name="My Service">' +
+  "         <bpmn2:incoming>Flow_1tyjp1r</bpmn2:incoming>" +
+  "         <bpmn2:outgoing>Flow_1ljam5t</bpmn2:outgoing>" +
+  '         <bpmn2:property id="Property_00pq5yr" name="__targetRef_placeholder" />' +
+  '         <bpmn2:dataInputAssociation id="DataInputAssociation_0xfkvb6">' +
+  "            <bpmn2:sourceRef>ProcessInputDataMapObject_1s6cese</bpmn2:sourceRef>" +
+  "            <bpmn2:targetRef>Property_00pq5yr</bpmn2:targetRef>" +
+  "         </bpmn2:dataInputAssociation>" +
+  '         <bpmn2:dataInputAssociation id="DataInputAssociation_02949i9">' +
+  "            <bpmn2:sourceRef>ProcessInputDataMapObject_15a8ehx</bpmn2:sourceRef>" +
+  "            <bpmn2:targetRef>Property_00pq5yr</bpmn2:targetRef>" +
+  "         </bpmn2:dataInputAssociation>" +
+  '         <bpmn2:dataOutputAssociation id="DataOutputAssociation_0smx6s6">' +
+  "            <bpmn2:targetRef>ProcessOutputDataMapObject_0a8zipx</bpmn2:targetRef>" +
+  "         </bpmn2:dataOutputAssociation>" +
+  "      </bpmn2:task>" +
+  '      <bpmn2:endEvent id="Event_1b3s573">' +
+  "         <bpmn2:incoming>Flow_1ljam5t</bpmn2:incoming>" +
+  "      </bpmn2:endEvent>" +
+  '      <bpmn2:sequenceFlow id="Flow_1ljam5t" sourceRef="Activity_0bs46dn" targetRef="Event_1b3s573" />' +
+  '      <bpmn2:sequenceFlow id="Flow_1tyjp1r" sourceRef="StartEvent_1" targetRef="Activity_0bs46dn" />' +
+  '      <dataflow:dataMapObject id="ProcessInputDataMapObject_1s6cese" name="Input_data_My_Service" dataObjectRef="DataObject_007u3by" inputFor="data" visibility="public" automaticNameCreation="true" editableName="Input_data_My_Service" />' +
+  '      <bpmn2:dataObject id="DataObject_007u3by" />' +
+  '      <dataflow:processOutputDataMapObject id="ProcessOutputDataMapObject_0a8zipx" name="Output_My_Service" dataObjectRef="DataObject_02kz6b4" visibility="public" automaticNameCreation="true" editableName="Output_My_Service" />' +
+  '      <bpmn2:dataObject id="DataObject_02kz6b4" />' +
+  '      <dataflow:dataMapObject id="ProcessInputDataMapObject_15a8ehx" name="Input_param_My_Service" visibility="public" inputFor="param" dataObjectRef="DataObject_1y6ggtp" />' +
+  '      <bpmn2:dataObject id="DataObject_1y6ggtp" />' +
+  "   </bpmn2:process>" +
+  '   <bpmndi:BPMNDiagram id="BPMNDiagram_1">' +
+  '      <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">' +
+  '         <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">' +
+  '            <dc:Bounds x="412" y="240" width="36" height="36" />' +
+  "         </bpmndi:BPMNShape>" +
+  '         <bpmndi:BPMNShape id="Activity_0bs46dn_di" bpmnElement="Activity_0bs46dn">' +
+  '            <dc:Bounds x="550" y="218" width="100" height="80" />' +
+  "            <bpmndi:BPMNLabel />" +
+  "         </bpmndi:BPMNShape>" +
+  '         <bpmndi:BPMNShape id="Event_1b3s573_di" bpmnElement="Event_1b3s573">' +
+  '            <dc:Bounds x="702" y="240" width="36" height="36" />' +
+  "         </bpmndi:BPMNShape>" +
+  '         <bpmndi:BPMNShape id="ProcessOutputDataMapObject_0a8zipx_di" bpmnElement="ProcessOutputDataMapObject_0a8zipx">' +
+  '            <dc:Bounds x="592" y="375" width="36" height="50" />' +
+  "            <bpmndi:BPMNLabel>" +
+  '               <dc:Bounds x="583" y="432" width="54" height="27" />' +
+  "            </bpmndi:BPMNLabel>" +
+  "         </bpmndi:BPMNShape>" +
+  '         <bpmndi:BPMNShape id="ProcessInputDataMapObject_1s6cese_di" bpmnElement="ProcessInputDataMapObject_1s6cese">' +
+  '            <dc:Bounds x="532" y="115" width="36" height="50" />' +
+  "            <bpmndi:BPMNLabel>" +
+  '               <dc:Bounds x="514" y="91" width="73" height="27" />' +
+  "            </bpmndi:BPMNLabel>" +
+  "         </bpmndi:BPMNShape>" +
+  '         <bpmndi:BPMNShape id="ProcessInputDataMapObject_15a8ehx_di" bpmnElement="ProcessInputDataMapObject_15a8ehx">' +
+  '            <dc:Bounds x="642" y="105" width="36" height="50" />' +
+  "            <bpmndi:BPMNLabel>" +
+  '               <dc:Bounds x="619" y="162" width="83" height="27" />' +
+  "            </bpmndi:BPMNLabel>" +
+  "         </bpmndi:BPMNShape>" +
+  '         <bpmndi:BPMNEdge id="Flow_1ljam5t_di" bpmnElement="Flow_1ljam5t">' +
+  '            <di:waypoint x="650" y="258" />' +
+  '            <di:waypoint x="702" y="258" />' +
+  "         </bpmndi:BPMNEdge>" +
+  '         <bpmndi:BPMNEdge id="Flow_1tyjp1r_di" bpmnElement="Flow_1tyjp1r">' +
+  '            <di:waypoint x="448" y="258" />' +
+  '            <di:waypoint x="550" y="258" />' +
+  "         </bpmndi:BPMNEdge>" +
+  '         <bpmndi:BPMNEdge id="DataInputAssociation_0xfkvb6_di" bpmnElement="DataInputAssociation_0xfkvb6">' +
+  '            <di:waypoint x="564" y="165" />' +
+  '            <di:waypoint x="593" y="218" />' +
+  "         </bpmndi:BPMNEdge>" +
+  '         <bpmndi:BPMNEdge id="DataOutputAssociation_0smx6s6_di" bpmnElement="DataOutputAssociation_0smx6s6">' +
+  '            <di:waypoint x="601" y="298" />' +
+  '            <di:waypoint x="608" y="375" />' +
+  "         </bpmndi:BPMNEdge>" +
+  '         <bpmndi:BPMNEdge id="DataInputAssociation_02949i9_di" bpmnElement="DataInputAssociation_02949i9">' +
+  '            <di:waypoint x="652" y="155" />' +
+  '            <di:waypoint x="633" y="218" />' +
+  "         </bpmndi:BPMNEdge>" +
+  "      </bpmndi:BPMNPlane>" +
+  "   </bpmndi:BPMNDiagram>" +
+  "</bpmn2:definitions>";
 // Workflow which models process input by connecting a DataMapObject with the start event
 export const PROCESS_INPUT_WORKFLOW =
   '<?xml version="1.0" encoding="UTF-8"?> <bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dataflow="https://github.com/data/transformation" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">   <bpmn2:process id="Process_1" isExecutable="false">     <bpmn2:startEvent id="StartEvent_1" name="Start1">       <bpmn2:dataOutputAssociation id="DataOutputAssociation_09uez60">         <bpmn2:targetRef>DataMapObject_1jhq83h</bpmn2:targetRef>       </bpmn2:dataOutputAssociation>     </bpmn2:startEvent>     <dataflow:dataMapObject id="DataMapObject_1jhq83h" name="ProcessInput" dataObjectRef="DataObject_0ny8570">       <dataflow:keyValueEntry name="x" value="1" />       <dataflow:keyValueEntry name="y" value="2" />     </dataflow:dataMapObject>     <bpmn2:dataObject id="DataObject_0ny8570" />   </bpmn2:process>   <bpmndi:BPMNDiagram id="BPMNDiagram_1">     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">         <dc:Bounds x="412" y="240" width="36" height="36" />         <bpmndi:BPMNLabel>           <dc:Bounds x="415" y="283" width="30" height="14" />         </bpmndi:BPMNLabel>       </bpmndi:BPMNShape>       <bpmndi:BPMNShape id="DataMapObject_1jhq83h_di" bpmnElement="DataMapObject_1jhq83h">         <dc:Bounds x="412" y="85" width="36" height="50" />         <bpmndi:BPMNLabel>           <dc:Bounds x="398" y="55" width="64" height="14" />         </bpmndi:BPMNLabel>       </bpmndi:BPMNShape>       <bpmndi:BPMNEdge id="DataOutputAssociation_09uez60_di" bpmnElement="DataOutputAssociation_09uez60">         <di:waypoint x="430" y="240" />         <di:waypoint x="430" y="135" />       </bpmndi:BPMNEdge>     </bpmndi:BPMNPlane>   </bpmndi:BPMNDiagram> </bpmn2:definitions> ';

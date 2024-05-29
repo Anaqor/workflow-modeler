@@ -7,6 +7,7 @@ import { loadDiagram } from "../../../modeler-component/editor/util/IoUtilities"
 import {
   COMPLETE_EXAMPLE_WORKFLOW,
   DOCUMENTATION_WORKFLOW,
+  INPUT_DO_PARAMS_DO_OUTPUT_DO,
   INPUT_TRANSFORMATION_ASSOCIATION,
   MULTI_IO_WORKFLOW,
   PROCESS_INPUT_WORKFLOW,
@@ -406,5 +407,61 @@ describe("Test the TransformationManager of the data flow extension.", function 
         bpmnFactory
       );
     });
+
+    it("Should generate task input/output properties from related data object metadata", async function () {
+      setPluginConfig([{ name: "dataflow" }]);
+      const result = await startDataFlowReplacementProcess(
+        INPUT_DO_PARAMS_DO_OUTPUT_DO
+      );
+
+      // load transformed workflow in modeler to check elements
+      const modeler = createTempModeler();
+      await loadDiagram(result.xml, modeler);
+
+      let elementRegistry = modeler.get("elementRegistry");
+
+      const taskBo = elementRegistry.filter(function (element) {
+        return element.type === "bpmn:Task";
+      })[0].businessObject;
+
+      assertProperties(taskBo, "Input_data_My_Service", "public", "data");
+      assertProperties(taskBo, "Input_param_My_Service", "public", "param");
+      assertProperties(taskBo, "Output_My_Service", "public", null);
+    });
   });
+
+  function assertProperties(task, propName, expVisibility, expInputFor) {
+    const param = getInputOutputParameter(propName, task);
+    expect(param).to.exist;
+
+    const props = getCamundaProperty(param.name, task);
+    expect(props).to.exist;
+    const value = JSON.parse(props.value);
+    expect(value.visibility).to.equal(expVisibility);
+    expect(value.inputFor).to.equal(expInputFor);
+  }
+
+  function getInputOutputParameter(name, task) {
+    const ioExtension = task.extensionElements.values.find(
+      (extension) => extension.$type === "camunda:InputOutput"
+    );
+
+    let parameter = ioExtension.inputParameters.find(
+      (param) => param.name === name
+    );
+
+    if (!parameter) {
+      parameter = ioExtension.outputParameters.find(
+        (param) => param.name === name
+      );
+    }
+
+    return parameter;
+  }
+
+  function getCamundaProperty(name, task) {
+    return task.extensionElements.values
+      .find((extension) => extension.$type === "camunda:Properties")
+      .values.find((prop) => prop.name === name);
+  }
 });

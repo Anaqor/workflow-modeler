@@ -2,6 +2,7 @@ import { createTempModelerFromXml } from "../ModelerHandler";
 import { getInputOutput } from "./camunda-utils/InputOutputUtil";
 import { getExtension } from "./camunda-utils/ExtensionElementsUtil";
 import { is } from "bpmn-js/lib/util/ModelUtil";
+import * as consts from "../../extensions/data-extension/Constants";
 
 /**
  * Returns all start events of the workflow defined by the process businessObject
@@ -452,14 +453,12 @@ export function addCamundaInputParameter(
  * Add a camunda output parameter with the given value to the given element.
  *
  * @param businessObject The businessObject of the given element.
- * @param name Name of the output parameter.
- * @param value Value of the output parameter.
+ * @param dataObjectBo The data object the output parameter is created for.
  * @param bpmnFactory The bpmnFactory of the bpmn-js modeler.
  */
 export function addCamundaOutputParameter(
   businessObject,
-  name,
-  value,
+  dataObjectBo,
   bpmnFactory
 ) {
   // get camunda io extension element
@@ -467,7 +466,8 @@ export function addCamundaOutputParameter(
     businessObject,
     bpmnFactory
   );
-
+  const name = dataObjectBo.name;
+  const value = dataObjectBo.value;
   // add new output parameter
   inputOutputExtensions.outputParameters.push(
     bpmnFactory.create("camunda:OutputParameter", {
@@ -475,20 +475,26 @@ export function addCamundaOutputParameter(
       value: value,
     })
   );
+
+  addParameterMetadata(
+    name,
+    businessObject.extensionElements,
+    dataObjectBo.inputFor,
+    dataObjectBo.visibility,
+    bpmnFactory
+  );
 }
 
 /**
  * Add a camunda input parameter of type map with the given key value map as value to the given element.
  *
  * @param businessObject The businessObject of the given element.
- * @param name Name of the input parameter.
- * @param keyValueMap key value map of the input parameter.
+ * @param dataObjectBo The data object the input parameter is created for.
  * @param bpmnFactory The bpmnFactory of the bpmn-js modeler.
  */
 export function addCamundaInputMapParameter(
   businessObject,
-  name,
-  keyValueMap,
+  dataObjectBo,
   bpmnFactory
 ) {
   // get camunda io extension element
@@ -496,6 +502,9 @@ export function addCamundaInputMapParameter(
     businessObject,
     bpmnFactory
   );
+
+  const name = dataObjectBo.name;
+  const keyValueMap = dataObjectBo.get(consts.CONTENT);
 
   // create a camunda map element for the key value map
   const map = createCamundaMap(keyValueMap, bpmnFactory);
@@ -508,6 +517,14 @@ export function addCamundaInputMapParameter(
 
   map.$parent = input;
   inputOutputExtensions.inputParameters.push(input);
+
+  addParameterMetadata(
+    name,
+    businessObject.extensionElements,
+    dataObjectBo.inputFor,
+    dataObjectBo.visibility,
+    bpmnFactory
+  );
 }
 
 /**
@@ -569,6 +586,50 @@ export function createCamundaMap(keyValueMap, bpmnFactory) {
   }
 
   return map;
+}
+
+function getCamundaProperties(extensionElements, bpmnFactory) {
+  let camundaProps = extensionElements.values.find(
+    (element) => element.$type === "camunda:Properties"
+  );
+  if (camundaProps) {
+    return camundaProps;
+  }
+  camundaProps = bpmnFactory.create("camunda:Properties", {
+    values: [],
+  });
+  extensionElements.values.push(camundaProps);
+
+  return camundaProps;
+}
+
+function addParameterMetadata(
+  name,
+  inputOutputExtensions,
+  inputFor,
+  visibility,
+  bpmnFactory
+) {
+  let paramMetadataValue = { inputFor: null, visibility: "private" };
+
+  if (inputFor) {
+    paramMetadataValue.inputFor = inputFor;
+  }
+  if (visibility) {
+    paramMetadataValue.visibility = visibility;
+  }
+
+  // Get the camunda properties element in the extension elements of the task
+  const camundaProperties = getCamundaProperties(
+    inputOutputExtensions,
+    bpmnFactory
+  );
+
+  const paramMetadata = bpmnFactory.create("camunda:Property", {
+    name: name,
+    value: JSON.stringify(paramMetadataValue),
+  });
+  camundaProperties.values.push(paramMetadata);
 }
 
 /**

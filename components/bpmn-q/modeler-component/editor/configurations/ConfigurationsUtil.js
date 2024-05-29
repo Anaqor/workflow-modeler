@@ -125,8 +125,7 @@ export function handleConfigurationsAction(
       case "camunda:InputMapParameter":
         addCamundaInputMapParameter(
           element.businessObject,
-          attribute.name,
-          attribute.value,
+          attribute,
           bpmnFactory
         );
         break;
