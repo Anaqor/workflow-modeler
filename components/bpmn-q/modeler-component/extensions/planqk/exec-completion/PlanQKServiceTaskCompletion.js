@@ -7,6 +7,7 @@ import {
   getSingleFlowElement,
   setOutputParameter,
   getCamundaInputOutput,
+  getCamundaProperties,
 } from "../../../editor/util/ModellingUtilities";
 import { createTempModelerFromXml } from "../../../editor/ModelerHandler";
 import { insertShape } from "../../../editor/util/TransformationUtilities";
@@ -233,6 +234,12 @@ async function replaceByInteractionSubprocess(
     bpmnFactory
   );
 
+  applyCamundaProperties2Subprocess(
+    task,
+    result["element"].businessObject,
+    bpmnFactory
+  );
+
   return result["success"];
 }
 
@@ -301,6 +308,17 @@ function applyTaskOutput2Subprocess(taskBO, subprocessBO, bpmnFactory) {
   subProcessIo.outputParameters.push(...taskIo.outputParameters);
 
   setOutputParameter(subprocessBO, "result", taskBO.params, bpmnFactory);
+}
+
+function applyCamundaProperties2Subprocess(taskBo, subprocessBo, bpmnFactory) {
+  const taskExtensionElements = taskBo.extensionElements;
+  if (taskExtensionElements) {
+    const camundaProperties = getCamundaProperties(
+      taskExtensionElements,
+      bpmnFactory
+    );
+    subprocessBo.extensionElements.values.push(camundaProperties);
+  }
 }
 
 /**
