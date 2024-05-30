@@ -1,8 +1,8 @@
 import PlanQKReplaceMenuProvider from "./PlanQKReplaceMenuProvider";
 import PlanQKPaletteProvider from "./PlanQKPaletteProvider";
 import PlanQKRenderer from "./PlanQKRenderer";
-import ServiceTaskPropertiesProvider from "./propeties/service-task-properties/ServiceTaskPropertiesProvider";
-import DataPoolPropertiesProvider from "./propeties/data-pool-properties/DataPoolPropertiesProvider";
+import ServiceTaskPropertiesProvider from "./properties/service-task-properties/ServiceTaskPropertiesProvider";
+import DataPoolPropertiesProvider from "./properties/data-pool-properties/DataPoolPropertiesProvider";
 import { getPluginConfig } from "../../editor/plugin/PluginConfigHandler";
 
 export default {

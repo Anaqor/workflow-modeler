@@ -588,7 +588,7 @@ export function createCamundaMap(keyValueMap, bpmnFactory) {
   return map;
 }
 
-function getCamundaProperties(extensionElements, bpmnFactory) {
+export function getCamundaProperties(extensionElements, bpmnFactory) {
   let camundaProps = extensionElements.values.find(
     (element) => element.$type === "camunda:Properties"
   );
