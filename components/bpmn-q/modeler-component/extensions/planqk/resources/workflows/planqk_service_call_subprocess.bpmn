@@ -21,7 +21,7 @@
       <semantic:startEvent id="Event_1du4ral" name="Start Interaction">
         <semantic:outgoing>Flow_080k7s4</semantic:outgoing>
       </semantic:startEvent>
-      <semantic:intermediateCatchEvent id="Event_1ajrxt7">
+      <semantic:intermediateCatchEvent id="Event_1ajrxt7" name="Service State Polling Timer">
         <semantic:incoming>Flow_0m9kjpk</semantic:incoming>
         <semantic:incoming>Flow_ServicePending</semantic:incoming>
         <semantic:outgoing>Flow_15hky8p</semantic:outgoing>
@@ -29,13 +29,13 @@
           <semantic:timeDuration xsi:type="semantic:tFormalExpression">R/PT5S</semantic:timeDuration>
         </semantic:timerEventDefinition>
       </semantic:intermediateCatchEvent>
-      <semantic:exclusiveGateway id="Gateway_0t1bksy">
+      <semantic:exclusiveGateway id="Gateway_0t1bksy" name="Service State Gateway">
         <semantic:incoming>Flow_ServiceResult</semantic:incoming>
         <semantic:outgoing>Flow_0tad265</semantic:outgoing>
         <semantic:outgoing>Flow_ServicePending</semantic:outgoing>
         <semantic:outgoing>Flow_171hjar</semantic:outgoing>
       </semantic:exclusiveGateway>
-      <semantic:serviceTask id="Activity_0q3qrfi" name="Get Service Result" camunda:class="de.stoneone.planqk.workflow.serviceimpl.ServiceResultRetriever">
+      <semantic:serviceTask id="Activity_Get_Service_Result" name="Get Result from Service" camunda:class="de.stoneone.planqk.workflow.serviceimpl.ServiceResultRetriever">
         <semantic:incoming>Flow_0tad265</semantic:incoming>
         <semantic:outgoing>Flow_023j8hf</semantic:outgoing>
       </semantic:serviceTask>
@@ -43,14 +43,14 @@
         <semantic:incoming>Flow_080k7s4</semantic:incoming>
         <semantic:outgoing>Flow_0m9kjpk</semantic:outgoing>
       </semantic:serviceTask>
-      <semantic:serviceTask id="Activity_Polling_Response" name="Poll Service Response" camunda:class="de.stoneone.planqk.workflow.serviceimpl.ServicePoller">
+      <semantic:serviceTask id="Activity_Polling_Response" name="Poll Response from Service" camunda:class="de.stoneone.planqk.workflow.serviceimpl.ServicePoller">
         <semantic:incoming>Flow_15hky8p</semantic:incoming>
         <semantic:outgoing>Flow_ServiceResult</semantic:outgoing>
       </semantic:serviceTask>
       <semantic:endEvent id="Event_0e35csg" name="End Interaction">
         <semantic:incoming>Flow_023j8hf</semantic:incoming>
       </semantic:endEvent>
-      <semantic:sequenceFlow id="Flow_0tad265" sourceRef="Gateway_0t1bksy" targetRef="Activity_0q3qrfi">
+      <semantic:sequenceFlow id="Flow_0tad265" sourceRef="Gateway_0t1bksy" targetRef="Activity_Get_Service_Result">
         <semantic:conditionExpression xsi:type="semantic:tFormalExpression">${executionState=='SUCCEEDED'}</semantic:conditionExpression>
       </semantic:sequenceFlow>
       <semantic:sequenceFlow id="Flow_15hky8p" sourceRef="Event_1ajrxt7" targetRef="Activity_Polling_Response" />
@@ -60,7 +60,7 @@
         <semantic:conditionExpression xsi:type="semantic:tFormalExpression">${executionState=='PENDING' || executionState=='RUNNING'}</semantic:conditionExpression>
       </semantic:sequenceFlow>
       <semantic:sequenceFlow id="Flow_080k7s4" sourceRef="Event_1du4ral" targetRef="Activity_Call_Service" />
-      <semantic:sequenceFlow id="Flow_023j8hf" sourceRef="Activity_0q3qrfi" targetRef="Event_0e35csg" />
+      <semantic:sequenceFlow id="Flow_023j8hf" sourceRef="Activity_Get_Service_Result" targetRef="Event_0e35csg" />
       <semantic:sequenceFlow id="Flow_171hjar" sourceRef="Gateway_0t1bksy" targetRef="Event_0m8b2ic">
         <semantic:conditionExpression xsi:type="semantic:tFormalExpression">${executionState=='FAILED' || executionState=='UNKNOWN'}</semantic:conditionExpression>
       </semantic:sequenceFlow>
@@ -121,7 +121,7 @@
       <bpmndi:BPMNShape id="Gateway_0t1bksy_di" bpmnElement="Gateway_0t1bksy" isMarkerVisible="true">
         <dc:Bounds x="645" y="175" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0q3qrfi_di" bpmnElement="Activity_0q3qrfi">
+      <bpmndi:BPMNShape id="Activity_Get_Service_Result_di" bpmnElement="Activity_Get_Service_Result">
         <dc:Bounds x="730" y="160" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_Call_Service_di" bpmnElement="Activity_Call_Service">

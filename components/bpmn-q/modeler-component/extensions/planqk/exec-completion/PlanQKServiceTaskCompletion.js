@@ -156,6 +156,14 @@ export async function startPlanqkReplacementProcess(xml) {
   return { status: "transformed", xml: transformedXml };
 }
 
+function setServiceTaskNames(replacementIASubprocess, serviceName) {
+  replacementIASubprocess.flowElements.forEach((element) => {
+    if (element.$type === "bpmn:ServiceTask") {
+      element.name = element.name + " " + serviceName;
+    }
+  });
+}
+
 /**
  * Replace the given task by the content of the replacement fragment.
  *
@@ -206,6 +214,10 @@ async function replaceByInteractionSubprocess(
   }
 
   console.log("Replacement interaction subprocess: ", replacementIASubprocess);
+
+  replacementIASubprocess.name = task.name;
+
+  setServiceTaskNames(replacementIASubprocess, task.name);
 
   // replace task by replacementIASubprocess
   let result = insertShape(

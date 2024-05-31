@@ -3,136 +3,138 @@ const validPlanqkDiagram =
   '<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:planqk="https://platform.planqk.de" xmlns:dataflow="https://github.com/data/transformation" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">\n' +
   '  <bpmn2:process id="Process_1" isExecutable="true">\n' +
   '    <bpmn2:startEvent id="StartEvent_1">\n' +
-  "      <bpmn2:outgoing>Flow_0z37l44</bpmn2:outgoing>\n" +
+  "      <bpmn2:outgoing>Flow_1rqxrxs</bpmn2:outgoing>\n" +
   "    </bpmn2:startEvent>\n" +
-  '    <planqk:serviceTask id="Activity_146fhc0" name="TestService" subscriptionId="93afc1d3-e1c4-479d-88ae-a571a7c816bd" applicationName="MyApp" tokenEndpoint="https://gateway.34.90.225.20.nip.io/token" consumerKey="Gmh_BDBAUwZVYJAF6_uCP5FLF2oa" consumerSecret="m4MOxeN6T5qIDuEwRPv5qy3E5NMa" serviceName="TestService" serviceEndpoint="https://gateway.34.90.225.20.nip.io/fd0a7648-6b0d-462c-aed2-26c46b439e1d/testservice/1.0.0" result="${output}">\n' +
-  "      <bpmn2:incoming>Flow_0z37l44</bpmn2:incoming>\n" +
-  "      <bpmn2:outgoing>Flow_0ti5pti</bpmn2:outgoing>\n" +
-  '      <bpmn2:property id="Property_01lrkmp" name="__targetRef_placeholder" />\n' +
-  '      <bpmn2:dataInputAssociation id="DataInputAssociation_0nwp006">\n' +
-  "        <bpmn2:sourceRef>ProcessInputDataMapObject_178qyt5</bpmn2:sourceRef>\n" +
-  "        <bpmn2:targetRef>Property_01lrkmp</bpmn2:targetRef>\n" +
+  '    <planqk:serviceTask id="Activity_0setwbe" name="CircuitGeneration" subscriptionId="c7aa1368-8c48-4435-993c-a079d746cf37" applicationName="MyApp" tokenEndpoint="https://gateway.34.90.225.20.nip.io/token" consumerKey="sDYssKpmJhLnSTipziPf3HlmgJwa" consumerSecret="rugfjg7lrcOwQj_iEgiYwdOigeIa" serviceName="CircuitGeneration" serviceEndpoint="https://gateway.34.90.225.20.nip.io/1f8def58-8ecb-4098-bf4c-83b41c950222/circuitgeneration/1.0.0" result="${output}">\n' +
+  "      <bpmn2:incoming>Flow_1rqxrxs</bpmn2:incoming>\n" +
+  "      <bpmn2:outgoing>Flow_0blcma9</bpmn2:outgoing>\n" +
+  '      <bpmn2:property id="Property_06b4h78" name="__targetRef_placeholder" />\n' +
+  '      <bpmn2:dataInputAssociation id="DataInputAssociation_046l7kc">\n' +
+  "        <bpmn2:sourceRef>ProcessInputDataMapObject_0rxrpmh</bpmn2:sourceRef>\n" +
+  "        <bpmn2:targetRef>Property_06b4h78</bpmn2:targetRef>\n" +
   "      </bpmn2:dataInputAssociation>\n" +
-  '      <bpmn2:dataInputAssociation id="DataInputAssociation_0vmuivr">\n' +
-  "        <bpmn2:sourceRef>ProcessInputDataMapObject_191m4g5</bpmn2:sourceRef>\n" +
-  "        <bpmn2:targetRef>Property_01lrkmp</bpmn2:targetRef>\n" +
+  '      <bpmn2:dataInputAssociation id="DataInputAssociation_0ty3qd9">\n' +
+  "        <bpmn2:sourceRef>ProcessInputDataMapObject_1jj94xw</bpmn2:sourceRef>\n" +
+  "        <bpmn2:targetRef>Property_06b4h78</bpmn2:targetRef>\n" +
   "      </bpmn2:dataInputAssociation>\n" +
-  '      <bpmn2:dataOutputAssociation id="DataOutputAssociation_1bzdos9">\n' +
-  "        <bpmn2:targetRef>DataMapObject_1pdt5r5</bpmn2:targetRef>\n" +
+  '      <bpmn2:dataOutputAssociation id="DataOutputAssociation_1jysozp">\n' +
+  "        <bpmn2:targetRef>DataMapObject_0knp5xd</bpmn2:targetRef>\n" +
   "      </bpmn2:dataOutputAssociation>\n" +
-  "      <bpmn2:extensionElements>\n" +
-  "        <camunda:properties>\n" +
-  '          <camunda:property name="Input_data_TestService" value="{&#34;inputFor&#34;:&#34;data&#34;,&#34;visibility&#34;:&#34;public&#34;}" />\n' +
-  '          <camunda:property name="Input_param_TestService" value="{&#34;inputFor&#34;:&#34;param&#34;,&#34;visibility&#34;:&#34;public&#34;}" />\n' +
-  '          <camunda:property name="Output_TestService" value="{&#34;inputFor&#34;:null,&#34;visibility&#34;:&#34;public&#34;}" />\n' +
-  "        </camunda:properties>\n" +
-  "      </bpmn2:extensionElements>" +
   "    </planqk:serviceTask>\n" +
-  '    <bpmn2:sequenceFlow id="Flow_0z37l44" sourceRef="StartEvent_1" targetRef="Activity_146fhc0" />\n' +
-  '    <dataflow:processInputDataMapObject id="ProcessInputDataMapObject_178qyt5" name="Input_data_TestService" dataObjectRef="DataObject_06po9cu" inputFor="data" visibility="public" automaticNameCreation="true" editableName="Input_data_TestService" />\n' +
-  '    <bpmn2:dataObject id="DataObject_06po9cu" />\n' +
-  '    <dataflow:processInputDataMapObject id="ProcessInputDataMapObject_191m4g5" name="Input_param_TestService" dataObjectRef="DataObject_1c45pq4" inputFor="param" visibility="public" automaticNameCreation="true" editableName="Input_param_TestService" />\n' +
-  '    <bpmn2:dataObject id="DataObject_1c45pq4" />\n' +
-  '    <dataflow:processOutputDataMapObject id="ProcessOutputDataMapObject_1ev8n0t" name="Output_TestService" dataObjectRef="DataObject_1xkw1p2" visibility="public" automaticNameCreation="true" editableName="Output_TestService" />\n' +
-  '    <bpmn2:dataObject id="DataObject_1xkw1p2" />\n' +
-  '    <planqk:serviceTask id="Activity_0etvt34" name="TestService" subscriptionId="93afc1d3-e1c4-479d-88ae-a571a7c816bd" applicationName="MyApp" tokenEndpoint="https://gateway.34.90.225.20.nip.io/token" consumerKey="Gmh_BDBAUwZVYJAF6_uCP5FLF2oa" consumerSecret="m4MOxeN6T5qIDuEwRPv5qy3E5NMa" serviceName="TestService" serviceEndpoint="https://gateway.34.90.225.20.nip.io/fd0a7648-6b0d-462c-aed2-26c46b439e1d/testservice/1.0.0" result="${output}">\n' +
-  "      <bpmn2:incoming>Flow_0ti5pti</bpmn2:incoming>\n" +
-  "      <bpmn2:outgoing>Flow_18axjw1</bpmn2:outgoing>\n" +
-  '      <bpmn2:property id="Property_1yh73vz" name="__targetRef_placeholder" />\n' +
-  '      <bpmn2:dataInputAssociation id="DataInputAssociation_1pbd74s">\n' +
-  "        <bpmn2:sourceRef>DataMapObject_1pdt5r5</bpmn2:sourceRef>\n" +
-  "        <bpmn2:targetRef>Property_1yh73vz</bpmn2:targetRef>\n" +
+  '    <planqk:serviceTask id="Activity_158oxcw" name="CircuitExecution" subscriptionId="3e1ab55d-7d6c-406d-86fa-a2917f4fce5a" applicationName="MyApp" tokenEndpoint="https://gateway.34.90.225.20.nip.io/token" consumerKey="sDYssKpmJhLnSTipziPf3HlmgJwa" consumerSecret="rugfjg7lrcOwQj_iEgiYwdOigeIa" serviceName="CircuitExecution" serviceEndpoint="https://gateway.34.90.225.20.nip.io/1f8def58-8ecb-4098-bf4c-83b41c950222/circuitexecution/1.0.0" result="${output}">\n' +
+  "      <bpmn2:incoming>Flow_0blcma9</bpmn2:incoming>\n" +
+  "      <bpmn2:outgoing>Flow_17u67en</bpmn2:outgoing>\n" +
+  '      <bpmn2:property id="Property_1ixz3e0" name="__targetRef_placeholder" />\n' +
+  '      <bpmn2:dataInputAssociation id="DataInputAssociation_08yc4c3">\n' +
+  "        <bpmn2:sourceRef>DataMapObject_0knp5xd</bpmn2:sourceRef>\n" +
+  "        <bpmn2:targetRef>Property_1ixz3e0</bpmn2:targetRef>\n" +
   "      </bpmn2:dataInputAssociation>\n" +
-  '      <bpmn2:dataOutputAssociation id="DataOutputAssociation_1701af2">\n' +
-  "        <bpmn2:targetRef>ProcessOutputDataMapObject_1ev8n0t</bpmn2:targetRef>\n" +
+  '      <bpmn2:dataInputAssociation id="DataInputAssociation_1e5kpga">\n' +
+  "        <bpmn2:sourceRef>DataMapObject_1m6fd0f</bpmn2:sourceRef>\n" +
+  "        <bpmn2:targetRef>Property_1ixz3e0</bpmn2:targetRef>\n" +
+  "      </bpmn2:dataInputAssociation>\n" +
+  '      <bpmn2:dataOutputAssociation id="DataOutputAssociation_1hbekr3">\n' +
+  "        <bpmn2:targetRef>ProcessOutputDataMapObject_0yw1r48</bpmn2:targetRef>\n" +
   "      </bpmn2:dataOutputAssociation>\n" +
-  "      <bpmn2:extensionElements>\n" +
-  "        <camunda:properties>\n" +
-  '          <camunda:property name="Input_data_TestService" value="{&#34;inputFor&#34;:&#34;data&#34;,&#34;visibility&#34;:&#34;public&#34;}" />\n' +
-  '          <camunda:property name="Input_param_TestService" value="{&#34;inputFor&#34;:&#34;param&#34;,&#34;visibility&#34;:&#34;public&#34;}" />\n' +
-  '          <camunda:property name="Output_TestService" value="{&#34;inputFor&#34;:null,&#34;visibility&#34;:&#34;public&#34;}" />\n' +
-  "        </camunda:properties>\n" +
-  "      </bpmn2:extensionElements>" +
   "    </planqk:serviceTask>\n" +
-  '    <bpmn2:sequenceFlow id="Flow_0ti5pti" sourceRef="Activity_146fhc0" targetRef="Activity_0etvt34" />\n' +
-  '    <bpmn2:endEvent id="Event_0w5598p">\n' +
-  "      <bpmn2:incoming>Flow_18axjw1</bpmn2:incoming>\n" +
+  '    <bpmn2:sequenceFlow id="Flow_0blcma9" sourceRef="Activity_0setwbe" targetRef="Activity_158oxcw" />\n' +
+  '    <bpmn2:sequenceFlow id="Flow_1rqxrxs" sourceRef="StartEvent_1" targetRef="Activity_0setwbe" />\n' +
+  '    <bpmn2:endEvent id="Event_0glgwrn">\n' +
+  "      <bpmn2:incoming>Flow_17u67en</bpmn2:incoming>\n" +
   "    </bpmn2:endEvent>\n" +
-  '    <bpmn2:sequenceFlow id="Flow_18axjw1" sourceRef="Activity_0etvt34" targetRef="Event_0w5598p" />\n' +
-  '    <dataflow:dataMapObject id="DataMapObject_1pdt5r5" name="Input_data_TestService2" dataObjectRef="DataObject_0won8n9" inputFor="data" visibility="private" />\n' +
-  '    <bpmn2:dataObject id="DataObject_0won8n9" />\n' +
+  '    <bpmn2:sequenceFlow id="Flow_17u67en" sourceRef="Activity_158oxcw" targetRef="Event_0glgwrn" />\n' +
+  '    <dataflow:processInputDataMapObject id="ProcessInputDataMapObject_0rxrpmh" name="Input_data_CircuitGeneration" dataObjectRef="DataObject_0e080a5" inputFor="data" visibility="public" automaticNameCreation="true" editableName="Input_data_CircuitGeneration" />\n' +
+  '    <bpmn2:dataObject id="DataObject_0e080a5" />\n' +
+  '    <dataflow:processInputDataMapObject id="ProcessInputDataMapObject_1jj94xw" name="Input_param_CircuitGeneration" dataObjectRef="DataObject_12wfokb" inputFor="param" visibility="public" automaticNameCreation="true" editableName="Input_param_CircuitGeneration" />\n' +
+  '    <bpmn2:dataObject id="DataObject_12wfokb" />\n' +
+  '    <dataflow:dataMapObject id="DataMapObject_0knp5xd" name="Circuit" dataObjectRef="DataObject_1eke1p5" inputFor="data" visibility="private" />\n' +
+  '    <bpmn2:dataObject id="DataObject_1eke1p5" />\n' +
+  '    <dataflow:dataMapObject id="DataMapObject_1m6fd0f" name="Circuit_Params" dataObjectRef="DataObject_0zf77bm" inputFor="param" visibility="public" />\n' +
+  '    <bpmn2:dataObject id="DataObject_0zf77bm" />\n' +
+  '    <dataflow:processOutputDataMapObject id="ProcessOutputDataMapObject_0yw1r48" name="Output_CircuitExecution" dataObjectRef="DataObject_0q31un9" visibility="public" automaticNameCreation="true" editableName="Output_CircuitExecution" />\n' +
+  '    <bpmn2:dataObject id="DataObject_0q31un9" />\n' +
   "  </bpmn2:process>\n" +
   '  <bpmndi:BPMNDiagram id="BPMNDiagram_1">\n' +
   '    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">\n' +
   '      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">\n' +
   '        <dc:Bounds x="412" y="240" width="36" height="36" />\n' +
   "      </bpmndi:BPMNShape>\n" +
-  '      <bpmndi:BPMNShape id="Activity_146fhc0_di" bpmnElement="Activity_146fhc0">\n' +
-  '        <dc:Bounds x="550" y="218" width="100" height="80" />\n' +
+  '      <bpmndi:BPMNShape id="Activity_0setwbe_di" bpmnElement="Activity_0setwbe">\n' +
+  '        <dc:Bounds x="510" y="218" width="100" height="80" />\n' +
   "        <bpmndi:BPMNLabel />\n" +
   "      </bpmndi:BPMNShape>\n" +
-  '      <bpmndi:BPMNShape id="ProcessInputDataMapObject_178qyt5_di" bpmnElement="ProcessInputDataMapObject_178qyt5">\n' +
-  '        <dc:Bounds x="522" y="95" width="36" height="50" />\n' +
-  "        <bpmndi:BPMNLabel>\n" +
-  '          <dc:Bounds x="497" y="152" width="86" height="27" />\n' +
-  "        </bpmndi:BPMNLabel>\n" +
+  '      <bpmndi:BPMNShape id="Event_0glgwrn_di" bpmnElement="Event_0glgwrn">\n' +
+  '        <dc:Bounds x="892" y="240" width="36" height="36" />\n' +
   "      </bpmndi:BPMNShape>\n" +
-  '      <bpmndi:BPMNShape id="Activity_0etvt34_di" bpmnElement="Activity_0etvt34">\n' +
-  '        <dc:Bounds x="770" y="218" width="100" height="80" />\n' +
+  '      <bpmndi:BPMNShape id="Activity_158oxcw_di" bpmnElement="Activity_158oxcw">\n' +
+  '        <dc:Bounds x="730" y="218" width="100" height="80" />\n' +
   "        <bpmndi:BPMNLabel />\n" +
   "      </bpmndi:BPMNShape>\n" +
-  '      <bpmndi:BPMNShape id="Event_0w5598p_di" bpmnElement="Event_0w5598p">\n' +
-  '        <dc:Bounds x="992" y="240" width="36" height="36" />\n' +
-  "      </bpmndi:BPMNShape>\n" +
-  '      <bpmndi:BPMNShape id="ProcessInputDataMapObject_191m4g5_di" bpmnElement="ProcessInputDataMapObject_191m4g5">\n' +
-  '        <dc:Bounds x="692" y="95" width="36" height="50" />\n' +
+  '      <bpmndi:BPMNShape id="ProcessInputDataMapObject_0rxrpmh_di" bpmnElement="ProcessInputDataMapObject_0rxrpmh">\n' +
+  '        <dc:Bounds x="492" y="105" width="36" height="50" />\n' +
   "        <bpmndi:BPMNLabel>\n" +
-  '          <dc:Bounds x="666" y="152" width="89" height="27" />\n' +
+  '          <dc:Bounds x="467" y="81" width="87" height="27" />\n' +
   "        </bpmndi:BPMNLabel>\n" +
   "      </bpmndi:BPMNShape>\n" +
-  '      <bpmndi:BPMNShape id="DataMapObject_1pdt5r5_di" bpmnElement="DataMapObject_1pdt5r5">\n' +
-  '        <dc:Bounds x="592" y="395" width="36" height="50" />\n' +
+  '      <bpmndi:BPMNShape id="ProcessInputDataMapObject_1jj94xw_di" bpmnElement="ProcessInputDataMapObject_1jj94xw">\n' +
+  '        <dc:Bounds x="632" y="85" width="36" height="50" />\n' +
   "        <bpmndi:BPMNLabel>\n" +
-  '          <dc:Bounds x="568" y="365" width="86" height="27" />\n' +
+  '          <dc:Bounds x="607" y="142" width="88" height="27" />\n' +
   "        </bpmndi:BPMNLabel>\n" +
   "      </bpmndi:BPMNShape>\n" +
-  '      <bpmndi:BPMNShape id="ProcessOutputDataMapObject_1ev8n0t_di" bpmnElement="ProcessOutputDataMapObject_1ev8n0t">\n' +
-  '        <dc:Bounds x="802" y="385" width="36" height="50" />\n' +
+  '      <bpmndi:BPMNShape id="DataMapObject_0knp5xd_di" bpmnElement="DataMapObject_0knp5xd">\n' +
+  '        <dc:Bounds x="652" y="335" width="36" height="50" />\n' +
   "        <bpmndi:BPMNLabel>\n" +
-  '          <dc:Bounds x="778" y="442" width="85" height="27" />\n' +
+  '          <dc:Bounds x="655" y="392" width="32" height="14" />\n' +
   "        </bpmndi:BPMNLabel>\n" +
   "      </bpmndi:BPMNShape>\n" +
-  '      <bpmndi:BPMNEdge id="Flow_0z37l44_di" bpmnElement="Flow_0z37l44">\n' +
+  '      <bpmndi:BPMNShape id="DataMapObject_1m6fd0f_di" bpmnElement="DataMapObject_1m6fd0f">\n' +
+  '        <dc:Bounds x="762" y="85" width="36" height="50" />\n' +
+  "        <bpmndi:BPMNLabel>\n" +
+  '          <dc:Bounds x="744" y="55" width="76" height="14" />\n' +
+  "        </bpmndi:BPMNLabel>\n" +
+  "      </bpmndi:BPMNShape>\n" +
+  '      <bpmndi:BPMNShape id="ProcessOutputDataMapObject_0yw1r48_di" bpmnElement="ProcessOutputDataMapObject_0yw1r48">\n' +
+  '        <dc:Bounds x="862" y="125" width="36" height="50" />\n' +
+  "        <bpmndi:BPMNLabel>\n" +
+  '          <dc:Bounds x="838" y="182" width="84" height="27" />\n' +
+  "        </bpmndi:BPMNLabel>\n" +
+  "      </bpmndi:BPMNShape>\n" +
+  '      <bpmndi:BPMNEdge id="Flow_0blcma9_di" bpmnElement="Flow_0blcma9">\n' +
+  '        <di:waypoint x="610" y="258" />\n' +
+  '        <di:waypoint x="730" y="258" />\n' +
+  "      </bpmndi:BPMNEdge>\n" +
+  '      <bpmndi:BPMNEdge id="Flow_1rqxrxs_di" bpmnElement="Flow_1rqxrxs">\n' +
   '        <di:waypoint x="448" y="258" />\n' +
-  '        <di:waypoint x="550" y="258" />\n' +
+  '        <di:waypoint x="510" y="258" />\n' +
   "      </bpmndi:BPMNEdge>\n" +
-  '      <bpmndi:BPMNEdge id="DataInputAssociation_0nwp006_di" bpmnElement="DataInputAssociation_0nwp006">\n' +
-  '        <di:waypoint x="554" y="145" />\n' +
-  '        <di:waypoint x="593" y="218" />\n' +
+  '      <bpmndi:BPMNEdge id="Flow_17u67en_di" bpmnElement="Flow_17u67en">\n' +
+  '        <di:waypoint x="830" y="258" />\n' +
+  '        <di:waypoint x="892" y="258" />\n' +
   "      </bpmndi:BPMNEdge>\n" +
-  '      <bpmndi:BPMNEdge id="DataInputAssociation_0vmuivr_di" bpmnElement="DataInputAssociation_0vmuivr">\n' +
-  '        <di:waypoint x="694" y="145" />\n' +
-  '        <di:waypoint x="646" y="218" />\n' +
+  '      <bpmndi:BPMNEdge id="DataInputAssociation_046l7kc_di" bpmnElement="DataInputAssociation_046l7kc">\n' +
+  '        <di:waypoint x="520" y="155" />\n' +
+  '        <di:waypoint x="544" y="218" />\n' +
   "      </bpmndi:BPMNEdge>\n" +
-  '      <bpmndi:BPMNEdge id="DataOutputAssociation_1701af2_di" bpmnElement="DataOutputAssociation_1701af2">\n' +
-  '        <di:waypoint x="820" y="298" />\n' +
-  '        <di:waypoint x="822" y="385" />\n' +
+  '      <bpmndi:BPMNEdge id="DataInputAssociation_0ty3qd9_di" bpmnElement="DataInputAssociation_0ty3qd9">\n' +
+  '        <di:waypoint x="637" y="135" />\n' +
+  '        <di:waypoint x="595" y="218" />\n' +
   "      </bpmndi:BPMNEdge>\n" +
-  '      <bpmndi:BPMNEdge id="Flow_0ti5pti_di" bpmnElement="Flow_0ti5pti">\n' +
-  '        <di:waypoint x="650" y="258" />\n' +
-  '        <di:waypoint x="770" y="258" />\n' +
-  "      </bpmndi:BPMNEdge>\n" +
-  '      <bpmndi:BPMNEdge id="Flow_18axjw1_di" bpmnElement="Flow_18axjw1">\n' +
-  '        <di:waypoint x="870" y="258" />\n' +
-  '        <di:waypoint x="992" y="258" />\n' +
-  "      </bpmndi:BPMNEdge>\n" +
-  '      <bpmndi:BPMNEdge id="DataInputAssociation_1pbd74s_di" bpmnElement="DataInputAssociation_1pbd74s">\n' +
-  '        <di:waypoint x="628" y="404" />\n' +
-  '        <di:waypoint x="770" y="274" />\n' +
-  "      </bpmndi:BPMNEdge>\n" +
-  '      <bpmndi:BPMNEdge id="DataOutputAssociation_1bzdos9_di" bpmnElement="DataOutputAssociation_1bzdos9">\n' +
+  '      <bpmndi:BPMNEdge id="DataOutputAssociation_1jysozp_di" bpmnElement="DataOutputAssociation_1jysozp">\n' +
   '        <di:waypoint x="600" y="298" />\n' +
-  '        <di:waypoint x="600" y="365" />\n' +
+  '        <di:waypoint x="652" y="349" />\n' +
+  "      </bpmndi:BPMNEdge>\n" +
+  '      <bpmndi:BPMNEdge id="DataInputAssociation_08yc4c3_di" bpmnElement="DataInputAssociation_08yc4c3">\n' +
+  '        <di:waypoint x="688" y="348" />\n' +
+  '        <di:waypoint x="765" y="298" />\n' +
+  "      </bpmndi:BPMNEdge>\n" +
+  '      <bpmndi:BPMNEdge id="DataInputAssociation_1e5kpga_di" bpmnElement="DataInputAssociation_1e5kpga">\n' +
+  '        <di:waypoint x="780" y="135" />\n' +
+  '        <di:waypoint x="780" y="218" />\n' +
+  "      </bpmndi:BPMNEdge>\n" +
+  '      <bpmndi:BPMNEdge id="DataOutputAssociation_1hbekr3_di" bpmnElement="DataOutputAssociation_1hbekr3">\n' +
+  '        <di:waypoint x="820" y="218" />\n' +
+  '        <di:waypoint x="862" y="175" />\n' +
   "      </bpmndi:BPMNEdge>\n" +
   "    </bpmndi:BPMNPlane>\n" +
   "  </bpmndi:BPMNDiagram>\n" +

@@ -1,3 +1,4 @@
+const { expect } = require("chai");
 const {
   setPluginConfig,
 } = require("../../../modeler-component/editor/plugin/PluginConfigHandler");
@@ -5,7 +6,9 @@ const {
   startPlanqkReplacementProcess,
 } = require("../../../modeler-component/extensions/planqk/exec-completion/PlanQKServiceTaskCompletion");
 const { validPlanqkDiagram } = require("../helpers/DiagramHelper");
-const chai = require("chai");
+const {
+  createTempModelerFromXml,
+} = require("../../../modeler-component/editor/ModelerHandler");
 const app1 = {
   id: "app1",
   description: "",
@@ -69,8 +72,8 @@ const dp3 = {
 };
 describe("Test the PlanQKServiceTaskCompletion of the PlanQK extension.", function () {
   describe("Transformation of PlanQK extensions", function () {
-    it("should create a valid transformed workflow", async function () {
-      // setConfig();
+    let result, modeler, subProcessBos, sequenceFlowBos;
+    before(async function () {
       setPluginConfig([
         {
           name: "dataflow",
@@ -102,12 +105,147 @@ describe("Test the PlanQKServiceTaskCompletion of the PlanQK extension.", functi
           },
         },
       ]);
-      const result = await startPlanqkReplacementProcess(validPlanqkDiagram);
+      result = await startPlanqkReplacementProcess(validPlanqkDiagram);
+      modeler = await createTempModelerFromXml(result.xml);
+      const elementRegistry = modeler.get("elementRegistry");
+      subProcessBos = elementRegistry
+        .filter(function (element) {
+          return element.type === "bpmn:SubProcess";
+        })
+        .map((subProcess) => subProcess.businessObject);
+      sequenceFlowBos = elementRegistry
+        .filter(function (element) {
+          return element.type === "bpmn:SequenceFlow";
+        })
+        .map((sequenceFlow) => sequenceFlow.businessObject);
+    });
 
-      chai.expect(result.status).to.equal("transformed");
+    it("should create a valid transformed workflow", async function () {
+      expect(result.status).to.equal("transformed");
 
       // check that all extension elements are replaced
-      chai.expect(result.xml).to.not.contain("planqk:");
+      expect(result.xml).to.not.contain("planqk:");
+    });
+
+    it("subprocess execution order should reflect modeled order of PlanQK service tasks", function () {
+      const circuitGeneration = subProcessBos.find(
+        (sub) => sub.name === "CircuitGeneration"
+      );
+      const circuitExecution = subProcessBos.find(
+        (sub) => sub.name === "CircuitExecution"
+      );
+
+      const flowFromCGtoCE = sequenceFlowBos.find(
+        (flow) =>
+          flow.sourceRef.id === circuitGeneration.id &&
+          flow.targetRef.id === circuitExecution.id
+      );
+      expect(
+        flowFromCGtoCE,
+        "CircuitGeneration should flow directly into CircuitExecution"
+      ).to.exist;
+    });
+
+    it("subprocesses properties should be generated correctly based on service task properties", function () {
+      const circuitExecution = subProcessBos.find(
+        (sub) => sub.name === "CircuitExecution"
+      );
+      const inputOutput = circuitExecution.extensionElements.values.find(
+        (ext) => ext.$type === "camunda:InputOutput"
+      );
+
+      const expectedParams = {
+        executionState: undefined,
+        executionId: undefined,
+        serviceEndpoint:
+          "https://gateway.34.90.225.20.nip.io/1f8def58-8ecb-4098-bf4c-83b41c950222/circuitexecution/1.0.0",
+        tokenEndpoint: "https://gateway.34.90.225.20.nip.io/token",
+        consumerSecret: "rugfjg7lrcOwQj_iEgiYwdOigeIa",
+        consumerKey: "sDYssKpmJhLnSTipziPf3HlmgJwa",
+        serviceName: "CircuitExecution",
+        applicationName: "MyApp",
+      };
+
+      const params = inputOutput.inputParameters;
+      expect(
+        inputOutput.inputParameters.length,
+        "There should be 8 input parameters"
+      ).to.equal(8);
+
+      for (const expParam in expectedParams) {
+        const param = params.find((p) => p.name === expParam);
+        expect(param, `${expParam} should be defined`).to.exist;
+        expect(param.value, `${expParam} should be correctly set`).to.equal(
+          expectedParams[expParam]
+        );
+      }
+    });
+
+    it("should verify the correct execution order in subprocess", function () {
+      // Locate the 'CircuitGeneration' subprocess
+      const circuitGeneration = subProcessBos.find(
+        (sub) => sub.name === "CircuitGeneration"
+      );
+
+      // Starting point is assumed to be the StartEvent
+      let lastTargetRef = circuitGeneration.flowElements.find(
+        (el) => el.$type === "bpmn:StartEvent"
+      );
+
+      // Define the expected sequence of elements with details on type and specific properties
+      const expectedSequence = [
+        { name: "Call Service CircuitGeneration", type: "bpmn:ServiceTask" },
+        {
+          name: "Service State Polling Timer",
+          type: "bpmn:IntermediateCatchEvent",
+          eventDefinitionType: "bpmn:TimerEventDefinition",
+        },
+        {
+          name: "Poll Response from Service CircuitGeneration",
+          type: "bpmn:ServiceTask",
+        },
+        { name: "Service State Gateway", type: "bpmn:ExclusiveGateway" },
+        {
+          name: "Get Result from Service CircuitGeneration",
+          type: "bpmn:ServiceTask",
+        },
+      ];
+
+      expectedSequence.forEach((element) => {
+        // Find the sequence flow leading from the last target
+        const flow = sequenceFlowBos.find(
+          (flow) => flow.sourceRef.id === lastTargetRef.id
+        );
+        expect(
+          flow,
+          `Flow should exist from ${lastTargetRef.name || lastTargetRef.id}`
+        ).to.exist;
+
+        // Identify the next element targeted by this flow
+        const nextElement = circuitGeneration.flowElements.find(
+          (el) => el.id === flow.targetRef.id && el.$type === element.type
+        );
+
+        // Special handling for IntermediateCatchEvent with TimerEventDefinition
+        if (element.type === "bpmn:IntermediateCatchEvent") {
+          const timerDefinition = nextElement.eventDefinitions.find(
+            (def) => def.$type === element.eventDefinitionType
+          );
+          expect(timerDefinition, `Element should have a timer definition`).to
+            .exist;
+        }
+
+        // Assert the element's name (if provided) matches the expected
+        if (element.name) {
+          expect(
+            nextElement.name,
+            `Element should be '${element.name}'`
+          ).to.equal(element.name);
+        }
+
+        // Update lastTargetRef to the current element for the next iteration
+        lastTargetRef = nextElement;
+      });
     });
   });
 });
