@@ -65,19 +65,10 @@ export default function DataFlowPropertiesProvider(
 
       if (is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT)) {
         // remove unwanted groups
-        const removeLabels = [
-          "General",
-          "Extension properties",
-          "Documentation",
-        ];
+        const removeLabels = ["Extension properties", "Documentation"];
         modifiedGroups = modifiedGroups.filter(function (item) {
           return removeLabels.indexOf(item.label) === -1;
         });
-
-        // add properties group as the first group in list
-        modifiedGroups.unshift(
-          createGeneralPropertiesGroupForDataMapObject(element, translate)
-        );
 
         // add group for displaying the content attribute of a DataMapObject as a key value map
         modifiedGroups.push(
@@ -105,10 +96,6 @@ export default function DataFlowPropertiesProvider(
             "public"
           )
         );
-
-        // add group for the automatic naming of the node
-        // this only works for input/output nodes
-        modifiedGroups.push(createObjectGroupForNodeNaming(element));
       }
 
       if (is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
@@ -130,10 +117,6 @@ export default function DataFlowPropertiesProvider(
             "public"
           )
         );
-
-        // add group for the automatic naming of the node
-        // this only works for input/output nodes
-        modifiedGroups.push(createObjectGroupForNodeNaming(element));
       }
 
       if (
@@ -228,33 +211,6 @@ DataFlowPropertiesProvider.$inject = [
 ];
 
 /**
- * Creates a (properties)group to edit the name
- *
- * @param element The given PlanQK data map object.
- * @param {Function} translate The translate function of the bpmn-js modeler.
- * @return {{entries: ([{component: (function(*): VNode<*>), isEdited: ((function(*): *)|*), id: string, element},{component: (function(*): VNode<*>), isEdited: ((function(*): *)|*), id: string, element},{component: (function(*): VNode<*>), isEdited: ((function(*): *)|*), id: string, element}]|*), id: string, label}}
- */
-function createGeneralPropertiesGroupForDataMapObject(element, translate) {
-  if (!element.businessObject.editableName) {
-    Object.defineProperty(element.businessObject, "editableName", {
-      value: "xyz",
-      writable: true,
-    });
-  }
-  if (!element.businessObject.automaticNameCreation) {
-    Object.defineProperty(element.businessObject, "automaticNameCreation", {
-      value: "true",
-      writable: true,
-    });
-  }
-  return {
-    id: "generalDataMapProperties",
-    label: translate("General Properties"),
-    component: PlanqkNameChange,
-  };
-}
-
-/**
  * Creates a properties group for displaying the custom properties of a DataFlow data map object. This group contains
  * a key value map for the content attribute of the data map object.
  *
@@ -290,26 +246,6 @@ function createDataMapObjectGroupForSchemaExample(
     component: PlanqkTextArea,
   };
   console.log(xxx);
-  return xxx;
-}
-
-function createObjectGroupForNodeNaming(element) {
-  console.log("createObjectGroupForNodeNaming");
-  let xxx = {
-    // return {
-    id: "dataMapObjectNaming",
-    element: element,
-    component: PlanqkNodeNaming,
-  };
-  console.log(xxx);
-
-  if (!element.businessObject.automaticNameCreation) {
-    Object.defineProperty(element.businessObject, "automaticNameCreation", {
-      value: "true",
-      writable: true,
-    });
-  }
-
   return xxx;
 }
 
@@ -540,49 +476,6 @@ function PlanqkTextArea(props) {
   });
 }
 
-function PlanqkNodeNaming(props) {
-  const { element } = props;
-  const modeling = useService("modeling");
-
-  const computeNameOfNode = () => {
-    let targetNodeNames = "";
-    let connectors = is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT)
-      ? element.outgoing
-      : element.incoming;
-    if (connectors.length > 0) {
-      connectors.forEach((connector) => {
-        let associationLine = null;
-        element.parent.children.forEach((child) => {
-          if (child.id === connector.id) {
-            associationLine = child;
-          }
-        });
-        if (associationLine != null) {
-          targetNodeNames += associationLine.businessObject.$parent.name
-            ? associationLine.businessObject.$parent.name
-            : "";
-        }
-      });
-    }
-    const prefix = is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT)
-      ? "Input_" + element.businessObject.inputFor
-      : "Output";
-    return prefix + (targetNodeNames.length > 0 ? "_" + targetNodeNames : "");
-  };
-  const adjustNameOfNode = () => {
-    const nameShouldBe = computeNameOfNode();
-    if (element.businessObject.name !== nameShouldBe) {
-      modeling.updateProperties(element, { editableName: nameShouldBe });
-      modeling.updateProperties(element, { name: nameShouldBe });
-    }
-  };
-  if (element.businessObject.automaticNameCreation === "true") {
-    adjustNameOfNode();
-  }
-
-  return "";
-}
-
 function PlanqkRadioChoice(props) {
   const { id, element, title = "please select", choices } = props;
   const [open, setOpen] = useLayoutState(["groups", id, "open"], false);
@@ -698,150 +591,6 @@ function PlanqkRadioChoice(props) {
                     type: "radio",
                     checked: checked(id, choices[1]),
                     onChange,
-                  }),
-                ],
-              }),
-            ],
-          }),
-        ],
-      }),
-    ],
-  });
-}
-
-function PlanqkNameChange(props) {
-  const { id, element, title = "Name" } = props;
-  const [open, setOpen] = useLayoutState(["groups", id, "open"], false);
-  const toggleOpen = () => {
-    setOpen(!open);
-  };
-  const ref = useShowEntryEvent(id);
-  const modeling = useService("modeling");
-
-  const checked = () => {
-    return element.businessObject.automaticNameCreation === "true";
-  };
-
-  const onChangeCheckbox = (value) => {
-    const newValue =
-      element.businessObject.automaticNameCreation === "true"
-        ? "false"
-        : "true";
-    modeling.updateProperties(element, {
-      automaticNameCreation: newValue,
-    });
-    if (newValue === "false") {
-      modeling.updateProperties(element, {
-        name: element.businessObject.editableName,
-      });
-    }
-  };
-
-  const onChange = (value) => {
-    const newValue = value.originalTarget.value;
-    modeling.updateProperties(element, {
-      editableName: newValue,
-    });
-    modeling.updateProperties(element, {
-      name: newValue,
-    });
-  };
-
-  const editDisabled = () => {
-    return element.businessObject.automaticNameCreation === "true";
-  };
-
-  const getNameValue = () => {
-    return element.businessObject.automaticNameCreation === "true"
-      ? element.businessObject.name
-      : element.businessObject.editableName;
-  };
-
-  return jsxs("div", {
-    class: "bio-properties-panel-group",
-    "data-group-id": "group-" + id,
-    children: [
-      jsxs("div", {
-        class: classnames(
-          "bio-properties-panel-group-header",
-          open ? "open" : ""
-        ),
-        onClick: toggleOpen,
-        children: [
-          jsx("div", {
-            class: "bio-properties-panel-group-header-title",
-            title: title,
-            children: title,
-          }),
-          jsx("div", {
-            class: "bio-properties-panel-group-header-buttons",
-            children: [
-              jsx("div", {
-                class: "bio-properties-panel-dot",
-                title: "Section contains data",
-              }),
-              jsx("button", {
-                class:
-                  "bio-properties-panel-group-header-button bio-properties-panel-arrow",
-                title: "Toggle section",
-                children: [
-                  jsx(ArrowIcon, {
-                    class: open
-                      ? "bio-properties-panel-arrow-down"
-                      : "bio-properties-panel-arrow-right",
-                  }),
-                ],
-              }),
-            ],
-          }),
-        ],
-      }),
-      jsx("div", {
-        class: classnames(
-          "bio-properties-panel-group-entries",
-          open ? "open" : ""
-        ),
-        children: [
-          jsx("div", {
-            class:
-              "planqk-properties-panel-item-set bio-properties-panel-entry",
-            title: title,
-            children: [
-              jsx("div", {
-                class: "planqk-properties-panel-radio-choice-item",
-                children: [
-                  jsx("label", {
-                    for: "editName",
-                    class: "bio-properties-panel-label",
-                    children: "build automatically",
-                  }),
-                  jsx("input", {
-                    ref: ref,
-                    id: "editName",
-                    name: "propertyGroup-" + id,
-                    type: "checkbox",
-                    checked: checked(),
-                    onChange: onChangeCheckbox,
-                  }),
-                ],
-              }),
-              jsx("div", {
-                class: "planqk-properties-panel-radio-choice-item",
-                children: [
-                  jsx("label", {
-                    for: "nameField",
-                    class: "bio-properties-panel-label",
-                    children: "name",
-                  }),
-                  jsx("input", {
-                    ref: ref,
-                    id: "nameField",
-                    name: "propertyGroup-" + id,
-                    selection: "nameField",
-                    type: "text",
-                    disabled: editDisabled(),
-                    onChange,
-                    value: getNameValue(),
                   }),
                 ],
               }),

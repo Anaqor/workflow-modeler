@@ -1,5 +1,4 @@
 import * as consts from "../Constants";
-
 export default class DataFlowPaletteProvider {
   constructor(bpmnFactory, create, elementFactory, palette, translate) {
     this.bpmnFactory = bpmnFactory;
@@ -28,20 +27,26 @@ export default class DataFlowPaletteProvider {
     }
 
     function createProcessInputDataMapObject(event) {
-      const businessObject = bpmnFactory.create(consts.PROCESS_INPUT_DATA_MAP_OBJECT);
+      const businessObject = bpmnFactory.create(
+        consts.PROCESS_INPUT_DATA_MAP_OBJECT
+      );
       let shape = elementFactory.createShape({
         type: consts.PROCESS_INPUT_DATA_MAP_OBJECT,
         businessObject: businessObject,
       });
+
       create.start(event, shape);
     }
 
     function createProcessOutputDataMapObject(event) {
-      const businessObject = bpmnFactory.create(consts.PROCESS_OUTPUT_DATA_MAP_OBJECT);
+      const businessObject = bpmnFactory.create(
+        consts.PROCESS_OUTPUT_DATA_MAP_OBJECT
+      );
       let shape = elementFactory.createShape({
         type: consts.PROCESS_OUTPUT_DATA_MAP_OBJECT,
         businessObject: businessObject,
       });
+
       create.start(event, shape);
     }
 
@@ -52,6 +57,7 @@ export default class DataFlowPaletteProvider {
         type: consts.DATA_STORE_MAP,
         businessObject: businessObject,
       });
+
       create.start(event, shape);
     }
 
@@ -92,7 +98,9 @@ export default class DataFlowPaletteProvider {
       "create.dataflow-process-input-data-map-object": {
         group: "dataflowExt",
         className: "dataflow-process-input-data-map-object-palette-icon",
-        title: translate("Creates a Data Map Object to model data items that map to input data of the workflow"),
+        title: translate(
+          "Creates a Data Map Object to model data items that map to input data of the workflow"
+        ),
         action: {
           click: createProcessInputDataMapObject,
           dragstart: createProcessInputDataMapObject,
@@ -101,7 +109,9 @@ export default class DataFlowPaletteProvider {
       "create.dataflow-process-output-data-map-object": {
         group: "dataflowExt",
         className: "dataflow-process-output-data-map-object-palette-icon",
-        title: translate("Creates a Data Map Object to model data items that map to output data of the workflow"),
+        title: translate(
+          "Creates a Data Map Object to model data items that map to output data of the workflow"
+        ),
         action: {
           click: createProcessOutputDataMapObject,
           dragstart: createProcessOutputDataMapObject,
@@ -126,4 +136,5 @@ DataFlowPaletteProvider.$inject = [
   "elementFactory",
   "palette",
   "translate",
+  "modeling",
 ];
