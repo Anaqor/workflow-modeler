@@ -15,7 +15,7 @@ module.exports = function (config) {
       "test/tests/editor/configurations.spec.js",
       "test/tests/editor/editor.spec.js",
       "test/tests/editor/plugin.spec.js",
-      "test/tests/planqk/planqk-transformation.spec.js",
+      "test/tests/planqk/**/*.spec.js",
       "test/tests/editor/utils/modelling-util.spec.js",
       "test/tests/qhana/qhana-plugin-config.spec.js",
       "test/tests/qhana/qhana-service-configs.spec.js",

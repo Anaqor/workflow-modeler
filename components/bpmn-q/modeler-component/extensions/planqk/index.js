@@ -36,6 +36,7 @@ export default {
   openApiMap: [
     "type",
     () => {
+      // Open API map must be dereferenced, i.e. all $ref must be resolved
       return getPluginConfig("planqk").openApiMap || {};
     },
   ],
