@@ -48,7 +48,13 @@ export default class DataFlowReplaceMenuProvider {
   getPopupMenuHeaderEntries(element) {
     return function (entries) {
       // remove all header entries (it is only the collection marker) for DataMapObjects because they do not support them
-      if (isAny(element, [consts.DATA_MAP_OBJECT, consts.PROCESS_INPUT_DATA_MAP_OBJECT, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT])) {
+      if (
+        isAny(element, [
+          consts.DATA_MAP_OBJECT,
+          consts.PROCESS_INPUT_DATA_MAP_OBJECT,
+          consts.PROCESS_OUTPUT_DATA_MAP_OBJECT,
+        ])
+      ) {
         return {};
       }
       return entries;
@@ -216,9 +222,16 @@ export default class DataFlowReplaceMenuProvider {
 
     // if DataObjectMap -- TransformationAssociation -> Activity
     if (
-      (isAny(element,[consts.DATA_MAP_OBJECT, consts.PROCESS_INPUT_DATA_MAP_OBJECT, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT])) &&
-      is(element.target, "bpmn:Activity") &&
-      !(isAny(element.source,[consts.DATA_MAP_OBJECT, consts.PROCESS_INPUT_DATA_MAP_OBJECT, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT]))
+      isAny(element.source, [
+        consts.DATA_MAP_OBJECT,
+        consts.PROCESS_INPUT_DATA_MAP_OBJECT,
+      ]) &&
+      isAny(element.target, [
+        consts.DATA_MAP_OBJECT,
+        consts.PROCESS_INPUT_DATA_MAP_OBJECT,
+        consts.PROCESS_OUTPUT_DATA_MAP_OBJECT,
+        "bpmn:Activity",
+      ])
     ) {
       // create definition for menu entry to replace with a transformation association
       const definition = {
@@ -266,8 +279,16 @@ export default class DataFlowReplaceMenuProvider {
     // create entry if transformation association does NOT connect two data map objects
     if (
       !(
-        isAny(element.source,[consts.DATA_MAP_OBJECT,consts.PROCESS_INPUT_DATA_MAP_OBJECT,consts.PROCESS_OUTPUT_DATA_MAP_OBJECT]) &&
-        isAny(element.target,[consts.DATA_MAP_OBJECT,consts.PROCESS_INPUT_DATA_MAP_OBJECT,consts.PROCESS_OUTPUT_DATA_MAP_OBJECT])
+        isAny(element.source, [
+          consts.DATA_MAP_OBJECT,
+          consts.PROCESS_INPUT_DATA_MAP_OBJECT,
+          consts.PROCESS_OUTPUT_DATA_MAP_OBJECT,
+        ]) &&
+        isAny(element.target, [
+          consts.DATA_MAP_OBJECT,
+          consts.PROCESS_INPUT_DATA_MAP_OBJECT,
+          consts.PROCESS_OUTPUT_DATA_MAP_OBJECT,
+        ])
       )
     ) {
       // create definition of menu entry
