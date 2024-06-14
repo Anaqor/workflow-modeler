@@ -5,7 +5,10 @@ import {
   workflowEventTypes,
 } from "../EditorConstants";
 import { getModeler } from "../ModelerHandler";
-import { dispatchWorkflowEvent } from "../events/EditorEventHandler";
+import {
+  dispatchWorkflowEvent,
+  dispatchWorkflowWasTransformedEvent
+} from "../events/EditorEventHandler";
 import fetch from "node-fetch";
 import getHardwareSelectionForm from "../../extensions/quantme/replacement/hardware-selection/HardwareSelectionForm";
 import JSZip from "jszip";
@@ -106,15 +109,16 @@ export async function dispatchWorkflowChangedEvent(modeler) {
 }
 
 export async function dispatchWorkflowTransformedEvent(modeler, xmlTransformed) {
+  const xml = await getXml(modeler);
   const svg = await getWorkflowAsSVG(modeler);
-  dispatchWorkflowEvent(
-      "workflow-transformed",
+
+  dispatchWorkflowWasTransformedEvent(
+      xml,
       xmlTransformed,
       svg.svg,
       editorConfig.getFileName()
   );
 }
-
 
 /**
  * Simple Getter which returns the opened bpmn diagram of the given bpmn modeler as a xml diagram.

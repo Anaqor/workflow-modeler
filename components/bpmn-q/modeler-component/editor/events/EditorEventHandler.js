@@ -60,6 +60,19 @@ export function dispatchWorkflowEvent(type, workflowXml, workflowSvg, workflowNa
   return modelerComponent?.dispatchEvent?.(newEvent) ?? true;
 }
 
+export function dispatchWorkflowWasTransformedEvent(workflowXml, transformedWorkflowXml, workflowSvg, workflowName) {
+  const newEvent = new CustomEvent("workflow-transformed", {
+    detail: {
+      workflowName: workflowName,
+      workflowSvg: workflowSvg,
+      workflow: workflowXml,
+      transformedWorkflow: transformedWorkflowXml,
+    },
+    cancelable: true,
+  });
+  return modelerComponent?.dispatchEvent?.(newEvent) ?? true;
+}
+
 /**
  * Add event listener for the custom HTML event of the given type. The listener is added to the current quantum workflow
  * modeler component and calls the given callback function when the event is fired.
