@@ -17,12 +17,7 @@ export default function PlanqkDeploymentButton(props) {
   const { modeler } = props;
 
   async function transformToCamundaBPMN(xml) {
-    // first... save the current workflow
-    await dispatchWorkflowChangedEvent(modeler);
-
     console.log("PlanQK BPMN workflow to be transformed:", xml);
-
-    console.log("Transforming data flow extension to BPMN");
 
     const replaceDataFlowResult = await startDataFlowReplacementProcess(xml);
     if (replaceDataFlowResult.status === "failed") {
@@ -53,7 +48,7 @@ export default function PlanqkDeploymentButton(props) {
     }
     console.log("Camunda BPMN resulting from transformation:", replaceResult.xml);
 
-    await dispatchWorkflowTransformedEvent(modeler, replaceResult.xml);
+    await dispatchWorkflowTransformedEvent(modeler, xml, replaceResult.xml);
 
     NotificationHandler.getInstance().displayNotification({
       title: "Deployment to Camunda engine started",

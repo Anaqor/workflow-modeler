@@ -108,8 +108,7 @@ export async function dispatchWorkflowChangedEvent(modeler) {
   );
 }
 
-export async function dispatchWorkflowTransformedEvent(modeler, xmlTransformed) {
-  const xml = await getXml(modeler);
+export async function dispatchWorkflowTransformedEvent(modeler, xml, xmlTransformed) {
   const svg = await getWorkflowAsSVG(modeler);
 
   dispatchWorkflowWasTransformedEvent(
