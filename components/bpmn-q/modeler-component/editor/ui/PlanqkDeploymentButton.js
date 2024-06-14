@@ -1,6 +1,6 @@
 import React from "react";
 import NotificationHandler from "./notifications/NotificationHandler";
-import {dispatchWorkflowChangedEvent, dispatchWorkflowTransformedEvent} from "../util/IoUtilities";
+import {dispatchWorkflowTransformedEvent} from "../util/IoUtilities";
 import { startPlanqkReplacementProcess } from "../../extensions/planqk/exec-completion/PlanQKServiceTaskCompletion";
 import { startDataFlowReplacementProcess } from "../../extensions/data-extension/transformation/TransformationManager";
 
