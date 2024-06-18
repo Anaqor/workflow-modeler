@@ -16,45 +16,29 @@ export default class DataFlowPaletteProvider {
   createPlanqkServiceTaskEntry() {
     const { bpmnFactory, create, elementFactory, translate } = this;
 
-    // start creation of a DataMapObject
     function createDataMapObject(event) {
-      const businessObject = bpmnFactory.create(consts.DATA_MAP_OBJECT);
-      let shape = elementFactory.createShape({
-        type: consts.DATA_MAP_OBJECT,
-        businessObject: businessObject,
-      });
-      create.start(event, shape);
+      createDataObject(event, consts.DATA_MAP_OBJECT);
     }
 
     function createProcessInputDataMapObject(event) {
-      const businessObject = bpmnFactory.create(
-        consts.PROCESS_INPUT_DATA_MAP_OBJECT
-      );
-      let shape = elementFactory.createShape({
-        type: consts.PROCESS_INPUT_DATA_MAP_OBJECT,
-        businessObject: businessObject,
-      });
-
-      create.start(event, shape);
+      createDataObject(event, consts.PROCESS_INPUT_DATA_MAP_OBJECT);
     }
 
     function createProcessOutputDataMapObject(event) {
-      const businessObject = bpmnFactory.create(
-        consts.PROCESS_OUTPUT_DATA_MAP_OBJECT
-      );
-      let shape = elementFactory.createShape({
-        type: consts.PROCESS_OUTPUT_DATA_MAP_OBJECT,
-        businessObject: businessObject,
-      });
-
-      create.start(event, shape);
+      createDataObject(event, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT);
     }
 
     // start creation of a DataStoreMap
     function createDataStoreMap(event) {
-      const businessObject = bpmnFactory.create(consts.DATA_STORE_MAP);
+      createDataObject(event, consts.DATA_STORE_MAP);
+    }
+
+    function createDataObject(event, dataObjectType) {
+      const businessObject = bpmnFactory.create(dataObjectType);
+      businessObject.name = businessObject.id;
+
       let shape = elementFactory.createShape({
-        type: consts.DATA_STORE_MAP,
+        type: dataObjectType,
         businessObject: businessObject,
       });
 
@@ -135,6 +119,5 @@ DataFlowPaletteProvider.$inject = [
   "create",
   "elementFactory",
   "palette",
-  "translate",
-  "modeling",
+  "translate"
 ];

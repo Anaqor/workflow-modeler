@@ -1,19 +1,15 @@
 import keyValueMap from "./KeyValueMap";
-import { is } from "bpmn-js/lib/util/ModelUtil";
-import {
-  ListGroup,
-  TextAreaEntry,
-  useLayoutState,
-  useShowEntryEvent,
-} from "@bpmn-io/properties-panel";
+import {getBusinessObject, is, isAny} from "bpmn-js/lib/util/ModelUtil";
+import {ListGroup, TextAreaEntry, TextFieldEntry, useLayoutState, useShowEntryEvent,} from "@bpmn-io/properties-panel";
 import * as consts from "../Constants";
 import * as configConsts from "../../../editor/configurations/Constants";
 import ConfigurationsProperties from "../../../editor/configurations/ConfigurationsProperties";
-import { getTransformationTaskConfiguration } from "../transf-task-configs/TransformationTaskConfigurations";
-import { jsx, jsxs } from "@bpmn-io/properties-panel/preact/jsx-runtime";
+import {getTransformationTaskConfiguration} from "../transf-task-configs/TransformationTaskConfigurations";
+import {jsx, jsxs} from "@bpmn-io/properties-panel/preact/jsx-runtime";
 import classnames from "classnames";
-import { debounce } from "min-dash";
-import { useService } from "bpmn-js-properties-panel";
+import {debounce} from "min-dash";
+import {useService} from "bpmn-js-properties-panel";
+import {isIdValid} from "../../../editor/util/camunda-utils/ValidationUtil";
 
 const LOW_PRIORITY = 500;
 
@@ -63,13 +59,19 @@ export default function DataFlowPropertiesProvider(
     return function (groups) {
       let modifiedGroups = groups;
 
-      if (is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT)) {
+      if (isAny(element, [consts.DATA_MAP_OBJECT, consts.PROCESS_INPUT_DATA_MAP_OBJECT, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT])) {
         // remove unwanted groups
         const removeLabels = ["Extension properties", "Documentation"];
         modifiedGroups = modifiedGroups.filter(function (item) {
           return removeLabels.indexOf(item.label) === -1;
         });
+        const generalGroup = modifiedGroups.find(
+          (group) => group.id === "general"
+        );
+        populateGeneralGroup(generalGroup);
+      }
 
+      if (is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT)) {
         // add group for displaying the content attribute of a DataMapObject as a key value map
         modifiedGroups.push(
           createDataMapObjectGroupForContent(element, injector, translate)
@@ -99,12 +101,6 @@ export default function DataFlowPropertiesProvider(
       }
 
       if (is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)) {
-        // remove unwanted groups
-        const removeLabels = ["Extension properties", "Documentation"];
-        modifiedGroups = modifiedGroups.filter(function (item) {
-          return removeLabels.indexOf(item.label) === -1;
-        });
-
         // add further groups for Output-DataMap
         modifiedGroups.push(
           createDataMapObjectGroupForSchemaExample(element, injector, translate)
@@ -124,12 +120,6 @@ export default function DataFlowPropertiesProvider(
         !is(element, consts.PROCESS_INPUT_DATA_MAP_OBJECT) &&
         !is(element, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT)
       ) {
-        // remove unwanted groups
-        const removeLabels = ["Extension properties", "Documentation"];
-        modifiedGroups = modifiedGroups.filter(function (item) {
-          return removeLabels.indexOf(item.label) === -1;
-        });
-
         // add group for displaying the content attribute of a DataMapObject as a key value map
         modifiedGroups.push(
           createDataMapObjectGroupForContent(element, injector, translate)
@@ -209,6 +199,24 @@ DataFlowPropertiesProvider.$inject = [
   "translate",
   "injector",
 ];
+
+function populateGeneralGroup(generalGroup) {
+
+  // remove name attribute
+  generalGroup.entries = generalGroup.entries.filter(
+    (entry) => entry.id !== "name"
+  );
+
+  const idEntry = generalGroup.entries.find(entry => entry.id === 'id');
+
+  // remove entry id from general group
+  generalGroup.entries = generalGroup.entries.filter(entry => entry.id !== 'id');
+
+  generalGroup.entries.push({
+    ...idEntry,
+    component: PlanqkDataObjectId
+  });
+}
 
 /**
  * Creates a properties group for displaying the custom properties of a DataFlow data map object. This group contains
@@ -389,6 +397,38 @@ function createTransformationTaskConfigurationsGroup(
   };
   console.log(xxx);
   return xxx;
+}
+
+function PlanqkDataObjectId(props) {
+  const {
+    element
+  } = props;
+  const modeling = useService('modeling');
+  const debounce = useService('debounceInput');
+  const translate = useService('translate');
+
+  const setValue = value => {
+    modeling.updateProperties(element, {
+      id: value,
+      name: value
+    });
+  };
+  const getValue = element => {
+    return element.businessObject.id;
+  };
+  const validate = value => {
+    const businessObject = getBusinessObject(element);
+    return isIdValid(businessObject, value, translate);
+  };
+  return TextFieldEntry({
+    element,
+    id: 'id',
+    label: translate('ID'),
+    getValue,
+    setValue,
+    debounce,
+    validate
+  });
 }
 
 function PlanqkTextArea(props) {

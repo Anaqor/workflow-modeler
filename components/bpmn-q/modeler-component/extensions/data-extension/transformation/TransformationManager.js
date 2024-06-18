@@ -203,7 +203,7 @@ export async function startDataFlowReplacementProcess(xml) {
         addCamundaOutputParameter(
           activity.businessObject,
           {
-            name: dataObjectBo.name,
+            name: dataObjectBo.id,
             value: "${result}",
             visibility: dataObjectBo.visibility,
             inputFor: null,
@@ -338,7 +338,7 @@ function transformDataMapObjects(
 
       // publish content of the data map object as process variable in process context
       processContextVariables[processElement.id].push({
-        name: dataMapObjectBo.name,
+        name: dataMapObjectBo.id,
         map: dataMapObjectBo.get(consts.CONTENT),
       });
     }
@@ -442,7 +442,7 @@ export function transformDataStoreMap(
 
   // publish details of the data store map as process variable in process context
   processContextVariables[processElement.id].push({
-    name: dataStoreMap.name,
+    name: dataStoreMap.id,
     map: dataStoreMap.get(consts.DETAILS),
   });
 
@@ -662,7 +662,7 @@ function createTransformationSourceDocs(transformationAssociationElement) {
   const target = transformationAssociationElement.target;
 
   const doc = `\n \n This object was transformed into ${
-    target.name || target.id
+    target.id
   }. The transformation was defined by the following expressions: \n`;
 
   const expressionsMap = {};
@@ -686,7 +686,7 @@ function createTransformationTargetDocs(transformationAssociationElement) {
   const source = transformationAssociationElement.source;
 
   const doc = `\n \n This object was created through a transformation of ${
-    source.name || source.id
+    source.id
   }. The transformation was defined by the following expressions: \n`;
 
   const expressionsMap = {};
