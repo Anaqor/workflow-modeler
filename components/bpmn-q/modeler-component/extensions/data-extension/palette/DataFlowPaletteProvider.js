@@ -28,11 +28,6 @@ export default class DataFlowPaletteProvider {
       createDataObject(event, consts.PROCESS_OUTPUT_DATA_MAP_OBJECT);
     }
 
-    // start creation of a DataStoreMap
-    function createDataStoreMap(event) {
-      createDataObject(event, consts.DATA_STORE_MAP);
-    }
-
     function createDataObject(event, dataObjectType) {
       const businessObject = bpmnFactory.create(dataObjectType);
       businessObject.name = businessObject.id;
@@ -68,15 +63,6 @@ export default class DataFlowPaletteProvider {
         action: {
           click: createDataMapObject,
           dragstart: createDataMapObject,
-        },
-      },
-      "create.dataflow-data-store-map": {
-        group: "dataflowExt",
-        className: "dataflow-data-store-map-task-palette-icon",
-        title: translate("Creates a Data Store Map to model data stores"),
-        action: {
-          click: createDataStoreMap,
-          dragstart: createDataStoreMap,
         },
       },
       "create.dataflow-process-input-data-map-object": {

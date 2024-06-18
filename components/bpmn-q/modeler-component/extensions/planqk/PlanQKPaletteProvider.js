@@ -26,15 +26,6 @@ export default class PlanQKPaletteProvider {
       create.start(event, shape);
     }
 
-    function createDataPool(event) {
-      const businessObject = bpmnFactory.create(consts.PLANQK_DATA_POOL);
-      let shape = elementFactory.createShape({
-        type: consts.PLANQK_DATA_POOL,
-        businessObject: businessObject,
-      });
-      create.start(event, shape);
-    }
-
     return {
       // add separator line to delimit the new group
       "planqk-separator": {
@@ -50,15 +41,6 @@ export default class PlanQKPaletteProvider {
         action: {
           click: createPlanQKServiceTask,
           dragstart: createPlanQKServiceTask,
-        },
-      },
-      "create.planqk-data-pool": {
-        group: "planqk",
-        className: "qwm-planqk-icon-data-pool-palette",
-        title: translate("Creates a PlanQK Data Pool to fetch data from"),
-        action: {
-          click: createDataPool,
-          dragstart: createDataPool,
         },
       },
     };
