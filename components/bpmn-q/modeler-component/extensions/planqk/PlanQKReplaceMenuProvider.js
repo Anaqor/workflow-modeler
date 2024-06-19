@@ -2,12 +2,11 @@ import * as planqkReplaceOptions from "./PlanQKReplaceOptions";
 import { is } from "bpmn-js/lib/util/ModelUtil";
 import * as consts from "./utilities/Constants";
 import {
-  createMenuEntries,
-  createMoreOptionsEntryWithReturn,
+  createMenuEntries
 } from "../../editor/util/PopupMenuUtilities";
 import { getPluginConfig } from "../../editor/plugin/PluginConfigHandler";
 import * as planqkConsts from "./utilities/Constants";
-import { filter } from "min-dash";
+import {filter} from "min-dash";
 import { isDifferentType } from "bpmn-js/lib/features/popup-menu/util/TypeUtil";
 
 /**
@@ -23,7 +22,8 @@ export default class PlanQKMenuProvider {
     dataPools,
     oauthInfoByAppMap,
     contextPad,
-    bpmnFactory
+    bpmnFactory,
+    eventBus
   ) {
     this.popupMenu = popupMenu;
     this.replaceElement = bpmnReplace.replaceElement;
@@ -35,8 +35,33 @@ export default class PlanQKMenuProvider {
     this.contextPad = contextPad;
     this.bpmnFactory = bpmnFactory;
     this.bpmnReplace = bpmnReplace;
+    this.eventBus = eventBus;
 
     popupMenu.registerProvider("bpmn-replace", this);
+    eventBus.on('shape.added', (event) => this.openMenu(event));
+  }
+
+  openMenu(event) {
+    const element = event.element;
+
+    // Check if the added shape is a task
+    if (element.type === "planqk:ServiceTask") {
+      // Delay the replace menu opening to ensure the task is fully rendered
+      setTimeout(() => {
+        const entry = this.getPopupMenuEntries(element);
+
+        if (entry.length > 0) {
+          const position = {
+            x: element.x + element.width,
+            y: element.y + element.height + 80
+          };
+
+          // Open the replace menu
+          this.popupMenu.open(element, 'bpmn-replace', position, {
+            title: this.translate('Select PlanQK Service')});
+        }
+      }, 1);
+    }
   }
 
   /**
@@ -57,11 +82,7 @@ export default class PlanQKMenuProvider {
 
       // add replacement entries for the active service subscription as replacements for a PlanQK service task
       if (is(element, consts.PLANQK_SERVICE_TASK)) {
-        let serviceTaskEntries = self.createTaskEntries(
-          element,
-          self.activeSubscriptions
-        );
-        return Object.assign(serviceTaskEntries, entries);
+        return self.createTaskEntries(element);
       }
 
       // add replacement entries for the available data pools as replacements for a PlanQK data pool
@@ -106,37 +127,8 @@ export default class PlanQKMenuProvider {
    * @return {{'replace-by-more-planqk-task-options': {label: string, className: string, action: Function}}}
    */
   createTaskEntries(element) {
-    const popupMenu = this.popupMenu;
-    const translate = this.translate;
-    const replaceElement = this.replaceElement;
     const activeSubscriptions = this.activeSubscriptions;
-    const self = this;
-    let options = self.createPlanQKServiceTaskEntries(
-      element,
-      activeSubscriptions
-    );
-    if (element.type !== consts.PLANQK_SERVICE_TASK) {
-      options = Object.assign(
-        createMenuEntries(
-          element,
-          planqkReplaceOptions.TASK,
-          translate,
-          replaceElement
-        ),
-        options
-      );
-    }
-
-    return {
-      ["replace-by-more-planqk-task-options"]: createMoreOptionsEntryWithReturn(
-        element,
-        "PlanQK Service Tasks",
-        "PlanQK Service Tasks",
-        popupMenu,
-        options,
-        "qwm-planqk-icon-service-task"
-      ),
-    };
+    return this.getServiceTaskPopupSubscriptionEntries(element, activeSubscriptions);
   }
 
   /**
@@ -146,13 +138,11 @@ export default class PlanQKMenuProvider {
    * @param subscriptions the subscriptions the modeler was configured with
    * @returns {{}} the created replacement entries for each subscription
    */
-  createPlanQKServiceTaskEntries(element, subscriptions) {
+  getServiceTaskPopupSubscriptionEntries(element, subscriptions) {
     const subscriptionEntries = {};
-
-    // create a menu entry for each subscription
     for (let subscription of subscriptions) {
-      subscriptionEntries["replace-with-" + subscription.id + " (2)"] =
-        this.createServiceTaskEntryNew(element, subscription);
+      var entry = this.createServiceTaskEntryNew(element, subscription);
+      subscriptionEntries[entry.id] = entry;
     }
     return subscriptionEntries;
   }
@@ -163,7 +153,7 @@ export default class PlanQKMenuProvider {
    *
    * @param element the element the replacement entries are requested for
    * @param subscription the subscription which is represented by this entry
-   * @returns {{action: action, className: string, label: string}} the replacement menu entry for the subscription
+   * @returns {{id: string, action: action, className: string, label: string}} the replacement menu entry for the subscription
    */
   createServiceTaskEntryNew(element, subscription) {
     const self = this.modeling;
@@ -171,17 +161,15 @@ export default class PlanQKMenuProvider {
     const oauthInfoByAppMap = this.oauthInfoByAppMap;
     const tokenUrl = getPluginConfig("planqk").tokenUrl;
 
-    /*
-         create a replacement menu entry for a subscription which sets the properties of the selected PlanQK service task
-         to the properties specified in the subscription
-         */
     return {
+      id: "replace-with-" + subscription.id,
       label: subscription.api.name + "@" + subscription.application.name,
       className: "bpmn-icon-service",
       action: function () {
         // replace selected element if it is not already a PlanQK service task
         let newElement;
         if (element.type !== planqkConsts.PLANQK_SERVICE_TASK) {
+          console.log("Replace element with PlanQK service task");
           newElement = replaceElement(element, {
             type: planqkConsts.PLANQK_SERVICE_TASK,
           });
@@ -286,4 +274,5 @@ PlanQKMenuProvider.$inject = [
   "oauthInfoByAppMap",
   "contextPad",
   "bpmnFactory",
+  "eventBus",
 ];
