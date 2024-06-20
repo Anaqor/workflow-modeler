@@ -1,12 +1,17 @@
 {
   "extends": [
     "plugin:camunda/recommended",
-    "plugin:custom/recommended"
+    "plugin:custom/recommended",
+    "bpmnlint:recommended",
+    "plugin:planqk/recommended"
   ],
   "rules": {
     "custom/quantme-tasks": "warn",
     "custom/subprocess-connected-end-event": "warn",
     "custom/subprocess-required-start-event": "warn",
-    "camunda/no-collapsed-sub-processes": "off"
+    "camunda/no-collapsed-sub-processes": "off",
+    "planqk/no-service-task-subscription":"error",
+    "planqk/no-process-output-data-object":"warn",
+    "label-required":"off"
   }
 }
