@@ -2,6 +2,7 @@ const {
   is,
   isAny
 } = require('bpmnlint-utils');
+const {PROCESS_OUTPUT_DATA_MAP_OBJECT} = require("../../../data-extension/Constants");
 
 
 /**
@@ -13,7 +14,7 @@ module.exports = function() {
     const flowElements = node.flowElements || [];
 
     return (
-      flowElements.some(node => is(node, 'planqk:ProcessOutputDataMapObject'))
+      flowElements.some(node => is(node, PROCESS_OUTPUT_DATA_MAP_OBJECT))
     );
   }
 
