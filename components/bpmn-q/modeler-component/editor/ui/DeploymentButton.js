@@ -8,6 +8,7 @@ import { startPlanqkReplacementProcess } from "../../extensions/planqk/exec-comp
 import { startDataFlowReplacementProcess } from "../../extensions/data-extension/transformation/TransformationManager";
 import { checkEnabledStatus } from "../plugin/PluginHandler";
 import { pluginNames } from "../EditorConstants";
+import {performPreDeploymentValidation} from "../util/ValidationUtilities";
 
 /**
  * React button for starting the deployment of the workflow.
@@ -43,18 +44,9 @@ export default function DeploymentButton(props) {
   }
 
   async function deployAsPlanQKService(xml) {
-    // get XML of the current workflow
-    const rootElement = getRootProcess(modeler.getDefinitions());
-    if (!rootElement.name) {
-      NotificationHandler.getInstance().displayNotification({
-        type: "error",
-        title: "Missing Service Name ",
-        content:
-          "You need to provide a name for the workflow before deploying it as a service. " +
-          "This name will serve as the identifier for the service and should be specified in " +
-          "the 'General' section of the properties panel.",
-        duration: 20000,
-      });
+    const isValid = await performPreDeploymentValidation(modeler);
+    if (!isValid) {
+      console.log("Deployment aborted since PlanQK BPMN workflow contains errors");
       return;
     }
 
@@ -91,6 +83,7 @@ export default function DeploymentButton(props) {
     }
     console.log("Camunda BPMN resulting from transformation:", xml);
 
+    const rootElement = getRootProcess(modeler.getDefinitions());
     console.log("Deploying workflow as PlanQK service " + rootElement.name);
 
     NotificationHandler.getInstance().displayNotification({

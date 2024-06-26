@@ -3,6 +3,7 @@ import NotificationHandler from "./notifications/NotificationHandler";
 import {dispatchWorkflowTransformedEvent} from "../util/IoUtilities";
 import { startPlanqkReplacementProcess } from "../../extensions/planqk/exec-completion/PlanQKServiceTaskCompletion";
 import { startDataFlowReplacementProcess } from "../../extensions/data-extension/transformation/TransformationManager";
+import {performPreDeploymentValidation} from "../util/ValidationUtilities";
 
 /**
  * React button for starting the deployment of the workflow.
@@ -57,7 +58,12 @@ export default function PlanqkDeploymentButton(props) {
   }
 
   async function onClick() {
-    await transformToCamundaBPMN((await modeler.saveXML({ format: true })).xml);
+    const isValid = await performPreDeploymentValidation(modeler);
+    if (isValid) {
+      await transformToCamundaBPMN((await modeler.saveXML({format: true})).xml);
+    } else {
+      console.log("Deployment aborted since PlanQK BPMN workflow contains errors");
+    }
   }
 
   return (
