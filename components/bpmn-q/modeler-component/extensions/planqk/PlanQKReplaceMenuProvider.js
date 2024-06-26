@@ -8,6 +8,7 @@ import { getPluginConfig } from "../../editor/plugin/PluginConfigHandler";
 import * as planqkConsts from "./utilities/Constants";
 import {filter} from "min-dash";
 import { isDifferentType } from "bpmn-js/lib/features/popup-menu/util/TypeUtil";
+import NotificationHandler from "../../editor/ui/notifications/NotificationHandler";
 
 /**
  * Replace menu provider of the PlanQK plugin. Adds custom replacement entries to model PlanQk service tasks and PlanQK data pools.
@@ -57,8 +58,20 @@ export default class PlanQKMenuProvider {
           };
 
           // Open the replace menu
-          this.popupMenu.open(element, 'bpmn-replace', position, {
-            title: this.translate('Select PlanQK Service')});
+          if (this.activeSubscriptions.length > 0 ) {
+            this.popupMenu.open(element, 'bpmn-replace', position, {
+              title: this.translate('Select PlanQK Service')});
+          } else {
+            NotificationHandler.getInstance().displayNotification({
+              type: "warning",
+              title: "No Service Subscriptions available",
+              content:
+                  "You need to be subscribed to one or more services that are callable by the PlanQK service tasks.",
+              duration: 20000,
+            });
+          }
+
+
         }
       }, 1);
     }
