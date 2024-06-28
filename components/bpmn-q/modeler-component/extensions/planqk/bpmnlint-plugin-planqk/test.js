@@ -1,13 +1,11 @@
-const { expect } = require('chai');
-
 const { createModdle } = require('bpmnlint/lib/testers/helper');
 
 const RuleTester = require('bpmnlint/lib/testers/rule-tester');
 
-const noServiceTaskSubscriptionRule = require('./rules/no-service-task-subscription.js');
+const invalidServiceTaskSubscriptionRule = require('./rules/invalid-service-task-subscription.js');
 
 
-RuleTester.verify('no-service-task-subscription', noServiceTaskSubscriptionRule, {
+RuleTester.verify('invalid-service-task-subscription', invalidServiceTaskSubscriptionRule, {
   valid: [
     {
       moddleElement: createModdle(

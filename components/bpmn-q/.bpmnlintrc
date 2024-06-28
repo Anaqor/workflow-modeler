@@ -10,7 +10,7 @@
     "custom/subprocess-connected-end-event": "warn",
     "custom/subprocess-required-start-event": "warn",
     "camunda/no-collapsed-sub-processes": "off",
-    "planqk/no-service-task-subscription":"error",
+    "planqk/invalid-service-task-subscription":"error",
     "planqk/no-process-output-data-object":"warn",
     "label-required":"off"
   }
