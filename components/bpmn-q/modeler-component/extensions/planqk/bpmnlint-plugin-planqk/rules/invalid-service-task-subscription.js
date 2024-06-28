@@ -24,14 +24,14 @@ module.exports = function() {
       return;
     }
 
-    const subscription = config.subscriptions.find(obj => obj.id === node.subscriptionId);
+    const subscription = config.subscriptions.find(subscription => subscription.id === node.subscriptionId);
     if (!subscription) {
-      reporter.report(node.id, `Subscription ${node.subscriptionId} of PlanQK service task ${taskName} could not be found.`);
+      reporter.report(node.id, `Subscription of PlanQK service task ${taskName} could not be found.`);
       return;
     }
 
     if (subscription.api.gatewayEndpoint !== node.serviceEndpoint) {
-      reporter.report(node.id, `Subscription ${node.subscriptionId} of PlanQK service task ${taskName} does not refer to a valid service endpoint.`);
+      reporter.report(node.id, `Subscription of PlanQK service task ${taskName} does not refer to a valid service endpoint.`);
     }
   }
 
