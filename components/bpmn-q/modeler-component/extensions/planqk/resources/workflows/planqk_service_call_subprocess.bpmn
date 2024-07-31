@@ -35,15 +35,15 @@
         <semantic:outgoing>Flow_ServicePending</semantic:outgoing>
         <semantic:outgoing>Flow_171hjar</semantic:outgoing>
       </semantic:exclusiveGateway>
-      <semantic:serviceTask id="Activity_Get_Service_Result" name="Get Result from Service" camunda:class="de.stoneone.planqk.workflow.serviceimpl.ServiceResultRetriever">
+      <semantic:serviceTask id="Activity_Get_Service_Result" name="Get Result from Service" camunda:class="product.platform.workflow.serviceimpl.ServiceResultRetriever">
         <semantic:incoming>Flow_0tad265</semantic:incoming>
         <semantic:outgoing>Flow_023j8hf</semantic:outgoing>
       </semantic:serviceTask>
-      <semantic:serviceTask id="Activity_Call_Service" name="Call Service" camunda:class="de.stoneone.planqk.workflow.serviceimpl.ServiceCaller">
+      <semantic:serviceTask id="Activity_Call_Service" name="Call Service" camunda:class="product.platform.workflow.serviceimpl.ServiceCaller">
         <semantic:incoming>Flow_080k7s4</semantic:incoming>
         <semantic:outgoing>Flow_0m9kjpk</semantic:outgoing>
       </semantic:serviceTask>
-      <semantic:serviceTask id="Activity_Polling_Response" name="Poll Response from Service" camunda:class="de.stoneone.planqk.workflow.serviceimpl.ServicePoller">
+      <semantic:serviceTask id="Activity_Polling_Response" name="Poll Response from Service" camunda:class="product.platform.workflow.serviceimpl.ServicePoller">
         <semantic:incoming>Flow_15hky8p</semantic:incoming>
         <semantic:outgoing>Flow_ServiceResult</semantic:outgoing>
       </semantic:serviceTask>
